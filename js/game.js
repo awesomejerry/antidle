@@ -8,6 +8,7 @@ const Game = {
     state: {
         food: GameConfig.resources.food.initial,
         workers: GameConfig.resources.workers.initial,
+        queen: GameConfig.resources.queen.initial,
         leaf: GameConfig.resources.leaf.initial,
         water: GameConfig.resources.water.initial,
         larvae: GameConfig.resources.larvae.initial,
@@ -239,6 +240,10 @@ const Game = {
      */
     updateUI() {
         // 更新資源
+        document.getElementById('queen').textContent = Utils.formatNumber(
+            this.state.queen,
+            GameConfig.resources.queen.precision
+        );
         document.getElementById('food').textContent = Utils.formatNumber(
             this.state.food,
             GameConfig.resources.food.precision
@@ -355,6 +360,7 @@ const Game = {
         this.state = {
             food: GameConfig.resources.food.initial,
             workers: GameConfig.resources.workers.initial,
+            queen: GameConfig.resources.queen.initial,
             leaf: GameConfig.resources.leaf.initial,
             water: GameConfig.resources.water.initial,
             larvae: GameConfig.resources.larvae.initial,

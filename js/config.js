@@ -27,6 +27,12 @@ const GameConfig = {
             initial: 5,
             precision: 0,
         },
+        queen: {
+            name: '蟻后',
+            icon: '👑',
+            initial: 1,
+            precision: 0,
+        },
         leaf: {
             name: '葉子',
             icon: '🍃',
