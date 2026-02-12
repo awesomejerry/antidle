@@ -328,13 +328,25 @@ const Game = {
             if (saveData) {
                 const parsed = JSON.parse(saveData);
 
-                // 驗證版本
+                // 驗證版本，如果是舊版本則重置為初始值
                 if (parsed.version !== GameConfig.game.version) {
-                    Utils.notify('檢測到舊版存檔，已升級', 'warning');
+                    Utils.notify('檢測到舊版存檔，已重置為初始狀態', 'warning');
+                    return; // 使用初始值，不載入舊存檔
                 }
 
-                // 載入狀態
-                this.state = { ...this.state, ...parsed.state };
+                // 載入狀態，確保包含所有必要的字段
+                this.state = {
+                    food: parsed.state.food ?? GameConfig.resources.food.initial,
+                    workers: parsed.state.workers ?? GameConfig.resources.workers.initial,
+                    queen: parsed.state.queen ?? GameConfig.resources.queen.initial,
+                    leaf: parsed.state.leaf ?? GameConfig.resources.leaf.initial,
+                    water: parsed.state.water ?? GameConfig.resources.water.initial,
+                    larvae: parsed.state.larvae ?? GameConfig.resources.larvae.initial,
+                    insect: parsed.state.insect ?? GameConfig.resources.insect.initial,
+                    totalFood: parsed.state.totalFood ?? GameConfig.resources.food.initial,
+                    gameTime: parsed.state.gameTime ?? 0,
+                    lastTick: Date.now(),
+                };
 
                 // 載入配置
                 if (parsed.config) {
@@ -342,7 +354,6 @@ const Game = {
                     GameConfig.game.saveInterval = parsed.config.saveInterval;
                 }
 
-                this.state.lastTick = Date.now();
                 Utils.log('遊戲已載入');
                 Utils.notify('歡迎回來！', 'success');
             }

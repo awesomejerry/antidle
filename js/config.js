@@ -7,7 +7,7 @@ const GameConfig = {
     // 遊戲基本設定
     game: {
         name: 'AntIdle',
-        version: '0.1.0',
+        version: '0.1.1',
         tickRate: 1000, // 遊戲更新頻率（毫秒）
         autoSave: true,
         saveInterval: 30000, // 自動儲存間隔（毫秒）
