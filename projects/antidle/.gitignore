@@ -1,0 +1,42 @@
+# 依賴
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 作業系統
+.DS_Store
+Thumbs.db
+
+# 建置輸出
+dist/
+build/
+*.min.js
+*.min.css
+
+# 資源
+assets/images/*
+!assets/images/.gitkeep
+assets/sounds/*
+!assets/sounds/.gitkeep
+
+# 環境變數
+.env
+.env.local
+
+# 測試覆蓋率
+coverage/
+
+# 暫存檔案
+*.tmp
+*.bak
+*.log

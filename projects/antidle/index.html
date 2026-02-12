@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AntIdle - 螞蟻放置遊戲">
+    <title>AntIdle - 螞蟻放置遊戲</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 遊戲容器 -->
+    <div id="game-container">
+        <!-- 頂部導航 -->
+        <header id="game-header">
+            <h1>🐜 AntIdle</h1>
+            <nav id="game-nav">
+                <button class="nav-btn active" data-tab="overview">總覽</button>
+                <button class="nav-btn" data-tab="colony">蟻群</button>
+                <button class="nav-btn" data-tab="upgrades">升級</button>
+                <button class="nav-btn" data-tab="achievements">成就</button>
+                <button class="nav-btn" data-tab="settings">設定</button>
+            </nav>
+        </header>
+
+        <!-- 主要內容區 -->
+        <main id="game-main">
+            <!-- 總覽頁面 -->
+            <section id="tab-overview" class="tab-content active">
+                <div id="resource-display">
+                    <div class="resource">
+                        <span class="resource-icon">🍯</span>
+                        <span class="resource-label">食物</span>
+                        <span class="resource-value" id="food">0</span>
+                    </div>
+                    <div class="resource">
+                        <span class="resource-icon">🍃</span>
+                        <span class="resource-label">葉子</span>
+                        <span class="resource-value" id="leaf">0</span>
+                    </div>
+                    <div class="resource">
+                        <span class="resource-icon">🐜</span>
+                        <span class="resource-label">工蟻</span>
+                        <span class="resource-value" id="workers">0</span>
+                    </div>
+                    <div class="resource">
+                        <span class="resource-icon">💧</span>
+                        <span class="resource-label">水滴</span>
+                        <span class="resource-value" id="water">0</span>
+                    </div>
+                    <div class="resource">
+                        <span class="resource-icon">🥚</span>
+                        <span class="resource-label">幼蟲</span>
+                        <span class="resource-value" id="larvae">0</span>
+                    </div>
+                    <div class="resource">
+                        <span class="resource-icon">🍪</span>
+                        <span class="resource-label">昆蟲</span>
+                        <span class="resource-value" id="insect">0</span>
+                    </div>
+                </div>
+
+                <div id="stats-display">
+                    <h3>統計資料</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">遊戲時間：</span>
+                        <span class="stat-value" id="game-time">00:00:00</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">總獲得食物：</span>
+                        <span class="stat-value" id="total-food">0</span>
+                    </div>
+                </div>
+
+                <div id="actions-container">
+                    <h3>動作</h3>
+                    <button id="collect-btn" class="action-btn primary">🍃 收集葉子</button>
+                    <button id="buy-worker-btn" class="action-btn">🐜 購買工蟻 (<span id="worker-price">10</span> 🍯)</button>
+                </div>
+            </section>
+
+            <!-- 蟻群頁面 -->
+            <section id="tab-colony" class="tab-content">
+                <h2>蟻群管理</h2>
+                <div id="colony-info">
+                    <p>管理您的蟻群和資源分配。</p>
+                </div>
+            </section>
+
+            <!-- 升級頁面 -->
+            <section id="tab-upgrades" class="tab-content">
+                <h2>升級商店</h2>
+                <div id="upgrades-list">
+                    <p>升級將在此顯示。</p>
+                </div>
+            </section>
+
+            <!-- 成就頁面 -->
+            <section id="tab-achievements" class="tab-content">
+                <h2>成就系統</h2>
+                <div id="achievements-list">
+                    <p>成就將在此顯示。</p>
+                </div>
+            </section>
+
+            <!-- 設定頁面 -->
+            <section id="tab-settings" class="tab-content">
+                <h2>遊戲設定</h2>
+                <div id="settings-container">
+                    <div class="setting-row">
+                        <label class="setting-label">自動儲存</label>
+                        <input type="checkbox" id="setting-autosave" checked>
+                    </div>
+                    <div class="setting-row">
+                        <label class="setting-label">儲存間隔（秒）</label>
+                        <input type="number" id="setting-save-interval" value="30" min="10" max="300">
+                    </div>
+                    <button id="save-btn" class="action-btn">💾 手動儲存</button>
+                    <button id="reset-btn" class="action-btn danger">🔄 重置遊戲</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 通知區域 -->
+        <div id="notifications"></div>
+    </div>
+
+    <!-- 載入順序：變數 → 配置 → 工具函數 → 遊戲核心 -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
