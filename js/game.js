@@ -9,6 +9,8 @@ const Game = {
         food: GameConfig.resources.food.initial,
         workers: GameConfig.resources.workers.initial,
         queen: GameConfig.resources.queen.initial,
+        soldiers: GameConfig.resources.soldiers.initial,
+        nurses: GameConfig.resources.nurses.initial,
         leaf: GameConfig.resources.leaf.initial,
         water: GameConfig.resources.water.initial,
         larvae: GameConfig.resources.larvae.initial,
@@ -16,6 +18,7 @@ const Game = {
         totalFood: GameConfig.resources.food.initial,
         gameTime: 0, // 遊戲時間（秒）
         lastTick: Date.now(),
+        lastInvasion: -GameConfig.invasion.cooldown, // 上次入侵時間
     },
 
     // 計時器引用
@@ -63,6 +66,18 @@ const Game = {
         document.getElementById('buy-worker-btn').addEventListener('click', () => {
             this.buyWorker();
             this.animateButton('buy-worker-btn');
+        });
+
+        // 購買兵蟻按鈕
+        document.getElementById('buy-soldier-btn').addEventListener('click', () => {
+            this.buySoldier();
+            this.animateButton('buy-soldier-btn');
+        });
+
+        // 購買護理蟻按鈕
+        document.getElementById('buy-nurse-btn').addEventListener('click', () => {
+            this.buyNurse();
+            this.animateButton('buy-nurse-btn');
         });
 
         // 導航分頁切換
@@ -182,6 +197,80 @@ const Game = {
     },
 
     /**
+     * 計算購買兵蟻的價格
+     * @returns {number} 兵蟻價格
+     */
+    getSoldierPrice() {
+        return Math.floor(
+            GameConfig.soldiers.basePrice * Math.pow(GameConfig.soldiers.priceMultiplier, this.state.soldiers)
+        );
+    },
+
+    /**
+     * 購買兵蟻
+     */
+    buySoldier() {
+        const price = this.getSoldierPrice();
+
+        if (this.state.larvae >= price) {
+            this.state.larvae -= price;
+            this.state.soldiers += 1;
+            this.updateUI();
+
+            // 視覺效果
+            this.showFloatingNumber(1, '⚔️', document.getElementById('buy-soldier-btn'));
+            this.createParticles('food', document.getElementById('buy-soldier-btn'));
+
+            // 資源值動畫
+            this.animateResourceValue('soldiers');
+            this.animateResourceValue('larvae');
+
+            Utils.notify(`孵化了 1 隻兵蟻！`, 'success');
+            Utils.log(`孵化了 1 隻兵蟻，價格: ${price} 幼蟲`);
+        } else {
+            Utils.notify(`幼蟲不足！需要 ${price} 幼蟲`, 'error');
+            this.shakeButton('buy-soldier-btn');
+        }
+    },
+
+    /**
+     * 計算購買護理蟻的價格
+     * @returns {number} 護理蟻價格
+     */
+    getNursePrice() {
+        return Math.floor(
+            GameConfig.nurses.basePrice * Math.pow(GameConfig.nurses.priceMultiplier, this.state.nurses)
+        );
+    },
+
+    /**
+     * 購買護理蟻
+     */
+    buyNurse() {
+        const price = this.getNursePrice();
+
+        if (this.state.food >= price) {
+            this.state.food -= price;
+            this.state.nurses += 1;
+            this.updateUI();
+
+            // 視覺效果
+            this.showFloatingNumber(1, '👶', document.getElementById('buy-nurse-btn'));
+            this.createParticles('food', document.getElementById('buy-nurse-btn'));
+
+            // 資源值動畫
+            this.animateResourceValue('nurses');
+            this.animateResourceValue('food');
+
+            Utils.notify(`購買了 1 隻護理蟻！`, 'success');
+            Utils.log(`購買了 1 隻護理蟻，價格: ${price} 食物`);
+        } else {
+            Utils.notify(`食物不足！需要 ${price} 食物`, 'error');
+            this.shakeButton('buy-nurse-btn');
+        }
+    },
+
+    /**
      * 計算食物產生率
      * @returns {number} 每秒產生的食物
      */
@@ -202,15 +291,78 @@ const Game = {
 
         // 工蟻自動將葉子轉換為食物
         if (this.state.workers > 0 && this.state.leaf > 0) {
-            const conversionRate = GameConfig.workers.efficiency * this.state.workers;
+            // 計算蟻后加成
+            const queenMultiplier = 1 + (this.state.queen * GameConfig.queen.productionMultiplier);
+            const conversionRate = GameConfig.workers.efficiency * this.state.workers * queenMultiplier;
             const amount = Math.min(this.state.leaf, conversionRate * delta);
             this.state.leaf -= amount;
             this.state.food += amount;
             this.state.totalFood += amount;
         }
 
+        // 蟻后產卵
+        if (this.state.queen > 0) {
+            const eggProduction = GameConfig.queen.eggProductionRate * this.state.queen * delta;
+            this.state.larvae += eggProduction;
+        }
+
+        // 護理蟻照顧幼蟲（提高產生速率）
+        if (this.state.nurses > 0) {
+            const careBonus = GameConfig.nurses.careEfficiency * this.state.nurses * delta;
+            this.state.larvae += careBonus;
+        }
+
+        // 入侵事件檢查
+        this.checkInvasion(delta);
+
         this.state.lastTick = now;
         this.updateUI();
+    },
+
+    /**
+     * 檢查並處理入侵事件
+     * @param {number} delta - 經過的時間（秒）
+     */
+    checkInvasion(delta) {
+        // 檢查是否在冷卻中
+        const timeSinceLastInvasion = this.state.gameTime - this.state.lastInvasion;
+        if (timeSinceLastInvasion < GameConfig.invasion.cooldown) {
+            return;
+        }
+
+        // 計算入侵機率
+        const invasionChance = GameConfig.invasion.baseChance * delta;
+
+        if (Math.random() < invasionChance) {
+            this.handleInvasion();
+        }
+    },
+
+    /**
+     * 處理入侵事件
+     */
+    handleInvasion() {
+        // 更新上次入侵時間
+        this.state.lastInvasion = this.state.gameTime;
+
+        // 計算防禦力和入侵強度
+        const defensePower = this.state.soldiers * GameConfig.soldiers.defensePower;
+        const invasionPower = Math.random() * 5 + 2; // 隨機 2-7 的入侵強度
+
+        if (defensePower >= invasionPower) {
+            // 防禦成功
+            const reward = GameConfig.invasion.baseReward + Math.floor(Math.random() * 10);
+            this.state.food += reward;
+            Utils.notify(`⚔️ 入侵已被擊退！獲得 ${reward} 食物`, 'success');
+            Utils.log(`防禦成功，獎勵: ${reward} 食物`);
+        } else {
+            // 防禦失敗
+            const damage = GameConfig.invasion.baseDamage + Math.floor(Math.random() * 5);
+            const lost = Math.min(this.state.food, damage);
+            this.state.food -= lost;
+            Utils.notify(`⚠️ 入侵成功！損失 ${lost} 食物`, 'error');
+            Utils.log(`防禦失敗，損失: ${lost} 食物`);
+        }
     },
 
     /**
@@ -270,6 +422,14 @@ const Game = {
             this.state.workers,
             GameConfig.resources.workers.precision
         );
+        document.getElementById('soldiers').textContent = Utils.formatNumber(
+            this.state.soldiers,
+            GameConfig.resources.soldiers.precision
+        );
+        document.getElementById('nurses').textContent = Utils.formatNumber(
+            this.state.nurses,
+            GameConfig.resources.nurses.precision
+        );
         document.getElementById('leaf').textContent = Utils.formatNumber(
             this.state.leaf,
             GameConfig.resources.leaf.precision
@@ -311,6 +471,7 @@ const Game = {
      * 更新按鈕狀態（啟用/禁用）
      */
     updateButtonStates() {
+        // 工蟻按鈕
         const buyWorkerBtn = document.getElementById('buy-worker-btn');
         const workerPrice = this.getWorkerPrice();
 
@@ -320,6 +481,30 @@ const Game = {
         } else {
             buyWorkerBtn.disabled = false;
             buyWorkerBtn.textContent = `🐜 購買工蟻 (${workerPrice} 🍯)`;
+        }
+
+        // 兵蟻按鈕
+        const buySoldierBtn = document.getElementById('buy-soldier-btn');
+        const soldierPrice = this.getSoldierPrice();
+
+        if (this.state.larvae < soldierPrice) {
+            buySoldierBtn.disabled = true;
+            buySoldierBtn.textContent = `⚔️ 孵化兵蟻 (${soldierPrice} 🥚) - 幼蟲不足`;
+        } else {
+            buySoldierBtn.disabled = false;
+            buySoldierBtn.textContent = `⚔️ 孵化兵蟻 (${soldierPrice} 🥚)`;
+        }
+
+        // 護理蟻按鈕
+        const buyNurseBtn = document.getElementById('buy-nurse-btn');
+        const nursePrice = this.getNursePrice();
+
+        if (this.state.food < nursePrice) {
+            buyNurseBtn.disabled = true;
+            buyNurseBtn.textContent = `👶 購買護理蟻 (${nursePrice} 🍯) - 食物不足`;
+        } else {
+            buyNurseBtn.disabled = false;
+            buyNurseBtn.textContent = `👶 購買護理蟻 (${nursePrice} 🍯)`;
         }
     },
 
@@ -495,6 +680,9 @@ const Game = {
                     water: parsed.state.water ?? GameConfig.resources.water.initial,
                     larvae: parsed.state.larvae ?? GameConfig.resources.larvae.initial,
                     insect: parsed.state.insect ?? GameConfig.resources.insect.initial,
+                    soldiers: parsed.state.soldiers ?? GameConfig.resources.soldiers.initial,
+                    nurses: parsed.state.nurses ?? GameConfig.resources.nurses.initial,
+                    lastInvasion: parsed.state.lastInvasion ?? -GameConfig.invasion.cooldown,
                     totalFood: parsed.state.totalFood ?? GameConfig.resources.food.initial,
                     gameTime: parsed.state.gameTime ?? 0,
                     lastTick: Date.now(),
@@ -524,12 +712,15 @@ const Game = {
             food: GameConfig.resources.food.initial,
             workers: GameConfig.resources.workers.initial,
             queen: GameConfig.resources.queen.initial,
+            soldiers: GameConfig.resources.soldiers.initial,
+            nurses: GameConfig.resources.nurses.initial,
             leaf: GameConfig.resources.leaf.initial,
             water: GameConfig.resources.water.initial,
             larvae: GameConfig.resources.larvae.initial,
             insect: GameConfig.resources.insect.initial,
             totalFood: GameConfig.resources.food.initial,
             gameTime: 0,
+            lastInvasion: -GameConfig.invasion.cooldown,
             lastTick: Date.now(),
         };
 
