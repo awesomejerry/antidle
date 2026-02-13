@@ -7,7 +7,7 @@ const GameConfig = {
     // 遊戲基本設定
     game: {
         name: 'AntIdle',
-        version: '0.2.2',
+        version: '0.3.0',
         tickRate: 1000, // 遊戲更新頻率（毫秒）
         autoSave: true,
         saveInterval: 30000, // 自動儲存間隔（毫秒）
@@ -74,7 +74,7 @@ const GameConfig = {
     // 動作設定
     actions: {
         collect: {
-            baseAmount: 1, // 每次點擊獲得的葉子
+            baseAmount: 5, // 每次點擊獲得的葉子（手動較快）
             baseCooldown: 0, // 冷卻時間（毫秒）
         },
     },
@@ -83,8 +83,8 @@ const GameConfig = {
     workers: {
         basePrice: 10, // 基礎價格（食物）
         priceMultiplier: 1.2, // 每次購買價格增長倍數
-        collectRate: 1.0, // 每隻工蟻每秒收集葉子數量（更快）
-        conversionRate: 0.5, // 每隻工蟻每秒轉換葉子為食物數量（較慢）
+        collectRate: 0.2, // 每隻工蟻每秒收集葉子數量（自動較慢）
+        conversionRate: 0.8, // 每隻工蟻每秒轉換葉子為食物數量
     },
 
     // 兵蟻購買設定
@@ -111,7 +111,7 @@ const GameConfig = {
     invasion: {
         baseChance: 0.05, // 基礎入侵機率（每秒）
         baseDamage: 5, // 入侵成功造成的基礎傷害（食物）
-        baseReward: 10, // 防禦成功獲得的基礎獎勵（食物）
+        baseReward: {food: 15, leaf: 5}, // 防禦成功獲得的基礎獎勵
         cooldown: 300, // 入侵冷卻時間（秒）
     },
 

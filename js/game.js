@@ -358,17 +358,21 @@ const Game = {
 
         if (defensePower >= invasionPower) {
             // 防禦成功
-            const reward = GameConfig.invasion.baseReward + Math.floor(Math.random() * 10);
-            this.state.food += reward;
-            Utils.notify(`⚔️ 入侵已被擊退！獲得 ${reward} 食物`, 'success');
-            Utils.log(`防禦成功，獎勵: ${reward} 食物`);
+            const baseReward = GameConfig.invasion.baseReward.food + Math.floor(Math.random() * 10);
+            const leafReward = GameConfig.invasion.baseReward.leaf + Math.floor(Math.random() * 5);
+            this.state.food += baseReward;
+            this.state.leaf += leafReward;
+            Utils.notify(`⚔️ 入侵已被擊退！獲得 ${baseReward} 食物 + ${leafReward} 葉子`, 'success');
+            Utils.log(`防禦成功，獎勵: ${baseReward} 食物 + ${leafReward} 葉子`);
         } else {
             // 防禦失敗
             const damage = GameConfig.invasion.baseDamage + Math.floor(Math.random() * 5);
-            const lost = Math.min(this.state.food, damage);
-            this.state.food -= lost;
-            Utils.notify(`⚠️ 入侵成功！損失 ${lost} 食物`, 'error');
-            Utils.log(`防禦失敗，損失: ${lost} 食物`);
+            const lostFood = Math.min(this.state.food, damage);
+            const lostLeaf = Math.min(this.state.leaf, Math.floor(damage / 2));
+            this.state.food -= lostFood;
+            this.state.leaf -= lostLeaf;
+            Utils.notify(`⚠️ 入侵成功！損失 ${lostFood} 食物 + ${lostLeaf} 葉子`, 'error');
+            Utils.log(`防禦失敗，損失: ${lostFood} 食物 + ${lostLeaf} 葉子`);
         }
     },
 
