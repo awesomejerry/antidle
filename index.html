@@ -101,7 +101,86 @@
             <section id="tab-colony" class="tab-content">
                 <h2>蟻群管理</h2>
                 <div id="colony-info">
-                    <p>管理您的蟻群和資源分配。</p>
+                    <div class="colony-stats">
+                        <div class="stat-card">
+                            <span class="stat-icon">🐜</span>
+                            <span class="stat-label">總螞蟻數量</span>
+                            <span class="stat-value" id="total-ants">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">⚔️</span>
+                            <span class="stat-label">防禦力</span>
+                            <span class="stat-value" id="total-defense">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">📈</span>
+                            <span class="stat-label">生產效率</span>
+                            <span class="stat-value" id="production-efficiency">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="ant-types">
+                        <div class="ant-type">
+                            <div class="ant-type-header">
+                                <span class="ant-type-icon">👑</span>
+                                <h3>蟻后</h3>
+                                <span class="ant-type-count" id="queen-count">0</span>
+                            </div>
+                            <div class="ant-type-info">
+                                <p>🥚 產卵率：<span id="queen-egg-rate">0</span> 幼蟲/秒</p>
+                                <p>📈 生產加成：<span id="queen-bonus">0</span>%</p>
+                                <p class="ant-type-description">蟻群的核心，持續產卵並提高所有螞蟻的生產效率。</p>
+                            </div>
+                        </div>
+
+                        <div class="ant-type">
+                            <div class="ant-type-header">
+                                <span class="ant-type-icon">🐜</span>
+                                <h3>工蟻</h3>
+                                <span class="ant-type-count" id="workers-count">0</span>
+                            </div>
+                            <div class="ant-type-info">
+                                <p>🍃 工作效率：<span id="workers-efficiency">1</span> 葉子/秒</p>
+                                <p>🍯 轉換率：<span id="workers-conversion">100%</span></p>
+                                <p class="ant-type-description">收集並將葉子轉換為食物，是蟻群的主要生產力。</p>
+                            </div>
+                        </div>
+
+                        <div class="ant-type">
+                            <div class="ant-type-header">
+                                <span class="ant-type-icon">⚔️</span>
+                                <h3>兵蟻</h3>
+                                <span class="ant-type-count" id="soldiers-count">0</span>
+                            </div>
+                            <div class="ant-type-info">
+                                <p>🛡️ 防禦力：<span id="soldiers-defense">0</span></p>
+                                <p>🎯 防禦成功率：<span id="soldiers-success-rate">0</span>%</p>
+                                <p class="ant-type-description">保護蟻群免受外來昆蟲入侵，防禦成功可獲得獎勵。</p>
+                            </div>
+                        </div>
+
+                        <div class="ant-type">
+                            <div class="ant-type-header">
+                                <span class="ant-type-icon">👶</span>
+                                <h3>護理蟻</h3>
+                                <span class="ant-type-count" id="nurses-count">0</span>
+                            </div>
+                            <div class="ant-type-info">
+                                <p>🥚 照顧效率：<span id="nurses-efficiency">0</span> 幼蟲/秒</p>
+                                <p>💡 總幼蟲產生：<span id="total-larvae-rate">0</span> 幼蟲/秒</p>
+                                <p class="ant-type-description">照顧幼蟲，提高整體幼蟲產生速率。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="invasion-status">
+                        <h3>防禦狀態</h3>
+                        <div class="status-indicator">
+                            <span class="status-icon" id="invasion-status-icon">🛡️</span>
+                            <span class="status-text" id="invasion-status-text">蟻群安全</span>
+                        </div>
+                        <p>上一次入侵：<span id="last-invasion-time">無</span></p>
+                    </div>
                 </div>
             </section>
 

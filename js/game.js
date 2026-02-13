@@ -453,6 +453,9 @@ const Game = {
         // 更新按鈕狀態（會更新工蟻價格）
         this.updateButtonStates();
 
+        // 更新蟻群管理資訊
+        this.updateColonyInfo();
+
         // 更新統計
         document.getElementById('game-time').textContent = Utils.formatTime(
             Math.floor(this.state.gameTime)
@@ -505,6 +508,81 @@ const Game = {
         } else {
             buyNurseBtn.disabled = false;
             buyNurseBtn.textContent = `👶 購買護理蟻 (${nursePrice} 🍯)`;
+        }
+    },
+
+    /**
+     * 更新蟻群管理資訊
+     */
+    updateColonyInfo() {
+        // 總螞蟻數量
+        const totalAnts = this.state.workers + this.state.soldiers + this.state.nurses + this.state.queen;
+        document.getElementById('total-ants').textContent = Utils.formatNumber(totalAnts);
+
+        // 總防禦力
+        const totalDefense = this.state.soldiers * GameConfig.soldiers.defensePower;
+        document.getElementById('total-defense').textContent = Utils.formatNumber(totalDefense);
+
+        // 生產效率
+        const productionMultiplier = 1 + (this.state.queen * GameConfig.queen.productionMultiplier);
+        const productionEfficiency = Math.round(productionMultiplier * 100);
+        document.getElementById('production-efficiency').textContent = `${productionEfficiency}%`;
+
+        // 蟻后資訊
+        document.getElementById('queen-count').textContent = this.state.queen;
+        const eggRate = GameConfig.queen.eggProductionRate * this.state.queen;
+        document.getElementById('queen-egg-rate').textContent = eggRate.toFixed(1);
+        const queenBonus = this.state.queen * GameConfig.queen.productionMultiplier * 100;
+        document.getElementById('queen-bonus').textContent = queenBonus.toFixed(1);
+
+        // 工蟻資訊
+        document.getElementById('workers-count').textContent = this.state.workers;
+        document.getElementById('workers-efficiency').textContent = GameConfig.workers.efficiency;
+        document.getElementById('workers-conversion').textContent = `${Math.round(productionEfficiency)}%`;
+
+        // 兵蟻資訊
+        document.getElementById('soldiers-count').textContent = this.state.soldiers;
+        document.getElementById('soldiers-defense').textContent = totalDefense;
+        // 基礎入侵強度是 2-7，計算成功率
+        const avgInvasionPower = 4.5;
+        const successRate = Math.min(100, Math.round((totalDefense / avgInvasionPower) * 100));
+        document.getElementById('soldiers-success-rate').textContent = successRate;
+
+        // 護理蟻資訊
+        document.getElementById('nurses-count').textContent = this.state.nurses;
+        const nurseEfficiency = GameConfig.nurses.careEfficiency * this.state.nurses;
+        document.getElementById('nurses-efficiency').textContent = nurseEfficiency.toFixed(1);
+        const totalLarvaeRate = eggRate + nurseEfficiency;
+        document.getElementById('total-larvae-rate').textContent = totalLarvaeRate.toFixed(1);
+
+        // 入侵狀態
+        const timeSinceLastInvasion = this.state.gameTime - this.state.lastInvasion;
+        const isInvaded = timeSinceLastInvasion < 10; // 10秒內視為入侵中
+
+        if (isInvaded) {
+            document.getElementById('invasion-status-icon').textContent = '⚠️';
+            document.getElementById('invasion-status-text').textContent = '入侵警告！';
+            document.getElementById('invasion-status-text').className = 'status-text danger';
+        } else if (this.state.soldiers === 0) {
+            document.getElementById('invasion-status-icon').textContent = '⚠️';
+            document.getElementById('invasion-status-text').textContent = '無防禦兵力';
+            document.getElementById('invasion-status-text').className = 'status-text danger';
+        } else {
+            document.getElementById('invasion-status-icon').textContent = '🛡️';
+            document.getElementById('invasion-status-text').textContent = '蟻群安全';
+            document.getElementById('invasion-status-text').className = 'status-text safe';
+        }
+
+        // 上一次入侵時間
+        const lastInvasion = document.getElementById('last-invasion-time');
+        if (this.state.lastInvasion < 0) {
+            lastInvasion.textContent = '無';
+        } else if (timeSinceLastInvasion < 60) {
+            lastInvasion.textContent = `${Math.floor(timeSinceLastInvasion)} 秒前`;
+        } else if (timeSinceLastInvasion < 3600) {
+            lastInvasion.textContent = `${Math.floor(timeSinceLastInvasion / 60)} 分鐘前`;
+        } else {
+            lastInvasion.textContent = `${Math.floor(timeSinceLastInvasion / 3600)} 小時前`;
         }
     },
 
