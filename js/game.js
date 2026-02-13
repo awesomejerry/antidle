@@ -287,13 +287,10 @@ const Game = {
             GameConfig.resources.insect.precision
         );
 
-        // 更新工蟻價格
-        document.getElementById('worker-price').textContent = this.getWorkerPrice();
-
         // 更新工蟻視覺化
         this.updateWorkersVisual();
 
-        // 更新按鈕狀態
+        // 更新按鈕狀態（會更新工蟻價格）
         this.updateButtonStates();
 
         // 更新統計
