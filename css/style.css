@@ -119,16 +119,52 @@ body {
     border-radius: var(--radius-md);
     text-align: center;
     transition: transform var(--transition-fast);
+    position: relative;
 }
 
 .resource:hover {
     transform: scale(1.02);
 }
 
+.resource.highlight {
+    background-color: var(--color-primary-light);
+    border: 2px solid var(--color-primary);
+}
+
 .resource-icon {
     font-size: var(--font-size-xxl);
     display: block;
     margin-bottom: var(--spacing-sm);
+}
+
+/* 蟻后特別樣式 */
+.resource-icon.queen-icon {
+    animation: crownGlow 2s ease-in-out infinite;
+}
+
+@keyframes crownGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px var(--color-warning));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 15px var(--color-warning));
+        transform: scale(1.1);
+    }
+}
+
+/* 工蟻動畫 */
+.resource-icon.worker-icon {
+    animation: workerWiggle 1s ease-in-out infinite;
+}
+
+@keyframes workerWiggle {
+    0%, 100% {
+        transform: rotate(-5deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
 }
 
 .resource-label {
@@ -354,6 +390,100 @@ body {
 
 .pulse {
     animation: pulse 0.5s ease;
+}
+
+/* 浮動數字特效 */
+.floating-number {
+    position: absolute;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-success);
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+    z-index: 1000;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.5);
+    }
+}
+
+/* 粒子特效 */
+.particle {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+    animation: particleFly 0.8s ease-out forwards;
+}
+
+.particle.leaf {
+    background-color: var(--color-success);
+}
+
+.particle.food {
+    background-color: var(--color-warning);
+}
+
+@keyframes particleFly {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+    }
+}
+
+/* 工蟻數量視覺化 */
+.worker-visual {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: var(--spacing-sm);
+}
+
+.worker-visual .mini-ant {
+    font-size: 12px;
+    animation: miniAntWiggle 0.5s ease-in-out infinite;
+    animation-delay: var(--delay);
+}
+
+@keyframes miniAntWiggle {
+    0%, 100% {
+        transform: rotate(-3deg) translateY(0);
+    }
+    50% {
+        transform: rotate(3deg) translateY(-2px);
+    }
+}
+
+/* 遊戲畫布區域（未來擴展） */
+#game-canvas-container {
+    background-color: var(--color-bg-dark);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--color-border);
+}
+
+#game-canvas-container.empty {
+    color: var(--color-text-light);
+    font-style: italic;
 }
 
 /* 實用類別 */

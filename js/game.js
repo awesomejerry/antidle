@@ -133,6 +133,11 @@ const Game = {
         const amount = GameConfig.actions.collect.baseAmount;
         this.state.leaf += amount;
         this.updateUI();
+
+        // 視覺效果：浮動數字和粒子
+        this.showFloatingNumber(amount, '🍃', document.getElementById('collect-btn'));
+        this.createParticles('leaf', document.getElementById('collect-btn'));
+
         Utils.log(`收集了 ${amount} 葉子`);
     },
 
@@ -156,6 +161,11 @@ const Game = {
             this.state.food -= price;
             this.state.workers += 1;
             this.updateUI();
+
+            // 視覺效果
+            this.showFloatingNumber(1, '🐜', document.getElementById('buy-worker-btn'));
+            this.createParticles('food', document.getElementById('buy-worker-btn'));
+
             Utils.notify(`購買了 1 隻工蟻！`, 'success');
             Utils.log(`購買了 1 隻工蟻，價格: ${price} 食物`);
         } else {
@@ -272,6 +282,9 @@ const Game = {
         // 更新工蟻價格
         document.getElementById('worker-price').textContent = this.getWorkerPrice();
 
+        // 更新工蟻視覺化
+        this.updateWorkersVisual();
+
         // 更新統計
         document.getElementById('game-time').textContent = Utils.formatTime(
             Math.floor(this.state.gameTime)
@@ -294,6 +307,93 @@ const Game = {
         const btn = document.getElementById(buttonId);
         btn.classList.add('pulse');
         setTimeout(() => btn.classList.remove('pulse'), 500);
+    },
+
+    /**
+     * 顯示浮動數字
+     * @param {number} amount - 數量
+     * @param {string} icon - 圖示
+     * @param {HTMLElement} targetElement - 目標元素
+     */
+    showFloatingNumber(amount, icon, targetElement) {
+        const floatingNumber = document.createElement('div');
+        floatingNumber.className = 'floating-number';
+        floatingNumber.textContent = `+${amount} ${icon}`;
+
+        // 設定位置
+        const rect = targetElement.getBoundingClientRect();
+        floatingNumber.style.left = `${rect.left + rect.width / 2}px`;
+        floatingNumber.style.top = `${rect.top}px`;
+
+        document.body.appendChild(floatingNumber);
+
+        // 動畫結束後移除
+        setTimeout(() => {
+            floatingNumber.remove();
+        }, 1000);
+    },
+
+    /**
+     * 創建粒子特效
+     * @param {string} type - 粒子類型（'leaf' 或 'food'）
+     * @param {HTMLElement} targetElement - 目標元素
+     */
+    createParticles(type, targetElement) {
+        const particleCount = 8;
+        const rect = targetElement.getBoundingClientRect();
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = `particle ${type}`;
+
+            // 隨機位置和方向
+            const angle = (Math.PI * 2 * i) / particleCount;
+            const distance = 50 + Math.random() * 50;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            particle.style.left = `${rect.left + rect.width / 2}px`;
+            particle.style.top = `${rect.top + rect.height / 2}px`;
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+
+            document.body.appendChild(particle);
+
+            // 粒子結束後移除
+            setTimeout(() => {
+                particle.remove();
+            }, 800);
+        }
+    },
+
+    /**
+     * 更新工蟻數量視覺化
+     */
+    updateWorkersVisual() {
+        const container = document.getElementById('workers-visual');
+        const workerCount = this.state.workers;
+
+        // 最多顯示 10 隻小螞蟻
+        const maxVisible = 10;
+        const visibleCount = Math.min(workerCount, maxVisible);
+
+        container.innerHTML = '';
+
+        for (let i = 0; i < visibleCount; i++) {
+            const miniAnt = document.createElement('span');
+            miniAnt.className = 'mini-ant';
+            miniAnt.textContent = '🐜';
+            miniAnt.style.setProperty('--delay', `${Math.random() * 0.5}s`);
+            container.appendChild(miniAnt);
+        }
+
+        // 如果工蟻超過 10 隻，顯示數字
+        if (workerCount > maxVisible) {
+            const moreIndicator = document.createElement('span');
+            moreIndicator.className = 'mini-ant';
+            moreIndicator.textContent = `+${workerCount - maxVisible}`;
+            container.appendChild(moreIndicator);
+        }
     },
 
     /**
