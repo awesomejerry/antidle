@@ -655,16 +655,7 @@ const Game = {
     /**
      * 更新蟻群管理資訊
      */
-
-    // 🔍 调試日志
-    console.log('=== updateColonyInfo 被调用 ===');
-    console.log('this.state.workers:', this.state.workers);
-    console.log('this.state.soldiers:', this.state.soldiers);
-    console.log('this.state.nurses:', this.state.nurses);
-    console.log('this.state.queen:', this.state.queen);
-    console.log('this.state.rooms:', this.state.rooms);
-    console.log('总螞蟻:', this.state.workers + this.state.soldiers + this.state.nurses + this.state.queen);
-
+    updateColonyInfo() {
         // 總螞蟻數量
         const totalAnts = this.state.workers + this.state.soldiers + this.state.nurses + this.state.queen;
         document.getElementById('total-ants').textContent = Utils.formatNumber(totalAnts);
@@ -1043,6 +1034,9 @@ const Game = {
                 // 驗證版本，如果是舊版本則重置為初始值
                 if (parsed.version !== GameConfig.game.version) {
                     Utils.notify('檢測到舊版存檔，已重置為初始狀態', 'warning');
+                    // 舊版本，不載入資料，使用預設值
+                    return;
+                }
 
                 // 載入狀態，確保包含所有必要的字段
                 this.state = {
