@@ -655,7 +655,16 @@ const Game = {
     /**
      * 更新蟻群管理資訊
      */
-    updateColonyInfo() {
+
+    // 🔍 调試日志
+    console.log('=== updateColonyInfo 被调用 ===');
+    console.log('this.state.workers:', this.state.workers);
+    console.log('this.state.soldiers:', this.state.soldiers);
+    console.log('this.state.nurses:', this.state.nurses);
+    console.log('this.state.queen:', this.state.queen);
+    console.log('this.state.rooms:', this.state.rooms);
+    console.log('总螞蟻:', this.state.workers + this.state.soldiers + this.state.nurses + this.state.queen);
+
         // 總螞蟻數量
         const totalAnts = this.state.workers + this.state.soldiers + this.state.nurses + this.state.queen;
         document.getElementById('total-ants').textContent = Utils.formatNumber(totalAnts);
