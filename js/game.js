@@ -720,8 +720,6 @@ const Game = {
         document.getElementById('fungus-level').textContent = this.state.rooms.fungus.level;
         document.getElementById('fungus-production').textContent = fungusProduction.toFixed(1);
         document.getElementById('fungus-consumption').textContent = fungusConsumption.toFixed(1);
-        const totalFoodFromFungus = fungusProduction;
-        document.getElementById('fungus-total-food').textContent = totalFoodFromFungus.toFixed(1);
 
         // 入侵狀態
         const timeSinceLastInvasion = this.state.gameTime - this.state.lastInvasion;
