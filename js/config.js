@@ -150,9 +150,151 @@ const GameConfig = {
         // 升級將在此定義
     },
 
-    // 成就系統（預留）
+    // 成就系統
     achievements: {
-        // 成就將在此定義
+        // 幼蟲相關
+        firstLarvae: {
+            name: '新生命',
+            description: '獲得第一隻幼蟲',
+            icon: '🥚',
+            condition: (state) => state.larvae >= 1,
+        },
+        larvae50: {
+            name: '繁衍不息',
+            description: '擁有 50 隻幼蟲',
+            icon: '🥚',
+            condition: (state) => state.larvae >= 50,
+        },
+        larvae200: {
+            name: '蟲群初現',
+            description: '擁有 200 隻幼蟲',
+            icon: '🐛',
+            condition: (state) => state.larvae >= 200,
+        },
+        
+        // 工蟻相關
+        workers10: {
+            name: '小型蟻群',
+            description: '擁有 10 隻工蟻',
+            icon: '🐜',
+            condition: (state) => state.workers >= 10,
+        },
+        workers50: {
+            name: '勤勞軍團',
+            description: '擁有 50 隻工蟻',
+            icon: '🐜',
+            condition: (state) => state.workers >= 50,
+        },
+        workers100: {
+            name: '工蟻大軍',
+            description: '擁有 100 隻工蟻',
+            icon: '🐜',
+            condition: (state) => state.workers >= 100,
+        },
+        
+        // 兵蟻相關
+        firstSoldier: {
+            name: '首名衛士',
+            description: '孵化第一隻兵蟻',
+            icon: '⚔️',
+            condition: (state) => state.soldiers >= 1,
+        },
+        soldiers10: {
+            name: '防禦陣列',
+            description: '擁有 10 隻兵蟻',
+            icon: '🛡️',
+            condition: (state) => state.soldiers >= 10,
+        },
+        
+        // 護理蟻相關
+        firstNurse: {
+            name: '呵護之手',
+            description: '招募第一隻護理蟻',
+            icon: '👶',
+            condition: (state) => state.nurses >= 1,
+        },
+        nurses10: {
+            name: '育兒團隊',
+            description: '擁有 10 隻護理蟻',
+            icon: '👶',
+            condition: (state) => state.nurses >= 10,
+        },
+        
+        // 蟻后相關
+        queenLevel2: {
+            name: '皇家進階',
+            description: '蟻后等級達到 2',
+            icon: '👑',
+            condition: (state) => state.queen >= 2,
+        },
+        
+        // 食物相關
+        food100: {
+            name: '初嘗甜頭',
+            description: '累計獲得 100 食物',
+            icon: '🍯',
+            condition: (state) => state.totalFood >= 100,
+        },
+        food1000: {
+            name: '大豐收',
+            description: '累計獲得 1000 食物',
+            icon: '🍯',
+            condition: (state) => state.totalFood >= 1000,
+        },
+        food10000: {
+            name: '食物帝國',
+            description: '累計獲得 10000 食物',
+            icon: '🏆',
+            condition: (state) => state.totalFood >= 10000,
+        },
+        
+        // 房間相關
+        firstUpgrade: {
+            name: '建築師',
+            description: '升級任意房間',
+            icon: '🏠',
+            condition: (state) => 
+                state.rooms.storage.level >= 1 || 
+                state.rooms.nursery.level >= 1 || 
+                state.rooms.fungus.level >= 1,
+        },
+        allRoomsLevel5: {
+            name: '全面升級',
+            description: '所有房間達到 5 級',
+            icon: '🏗️',
+            condition: (state) => 
+                state.rooms.storage.level >= 5 && 
+                state.rooms.nursery.level >= 5 && 
+                state.rooms.fungus.level >= 5,
+        },
+        
+        // 時間相關
+        playTime10min: {
+            name: '初入蟻界',
+            description: '遊戲時間達到 10 分鐘',
+            icon: '⏰',
+            condition: (state) => state.gameTime >= 600,
+        },
+        playTime1hour: {
+            name: '蟻國新手',
+            description: '遊戲時間達到 1 小時',
+            icon: '⏰',
+            condition: (state) => state.gameTime >= 3600,
+        },
+        
+        // 入侵相關（特殊條件，在程式碼中手動觸發）
+        firstDefense: {
+            name: '首次防禦',
+            description: '成功擊退一次入侵',
+            icon: '🛡️',
+            condition: null,
+        },
+        defenseMaster: {
+            name: '防禦大師',
+            description: '成功防禦 10 次入侵',
+            icon: '🏅',
+            condition: null,
+        },
     },
 
     // 存檔鍵名

@@ -871,3 +871,59 @@ body {
     box-shadow: none;
 }
 
+
+/* 成就系統樣式 */
+#achievements-stats {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    font-weight: normal;
+    margin-left: var(--spacing-sm);
+}
+
+.no-achievements {
+    text-align: center;
+    color: var(--color-text-light);
+    font-style: italic;
+    padding: var(--spacing-xl);
+    background: var(--color-bg-dark);
+    border-radius: var(--radius-md);
+}
+
+.achievement-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background-color: var(--color-bg-dark);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+}
+
+.achievement-card.unlocked {
+    border-color: var(--color-success);
+    box-shadow: 0 4px 8px rgba(34, 139, 34, 0.2);
+}
+
+.achievement-card.unlocked:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 12px rgba(34, 139, 34, 0.3);
+}
+
+.achievement-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.achievement-info h4 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-base);
+}
+
+.achievement-info p {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}

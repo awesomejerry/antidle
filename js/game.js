@@ -24,6 +24,8 @@ const Game = {
             nursery: { level: 0, maxLevel: GameConfig.rooms.nursery.maxLevel },
             fungus: { level: 0, maxLevel: GameConfig.rooms.fungus.maxLevel },
         },
+        achievements: [], // 已解鎖的成就 ID
+        defenseWins: 0, // 成功防禦次數
     },
 
     // 計時器引用
@@ -414,6 +416,11 @@ const Game = {
 
         this.state.lastTick = now;
         this.updateUI();
+        
+        // 檢查成就（每 5 秒檢查一次，避免頻繁檢查）
+        if (Math.floor(this.state.gameTime) % 5 === 0) {
+            this.checkAchievements();
+        }
     },
 
     /**
@@ -448,12 +455,19 @@ const Game = {
 
         if (defensePower >= invasionPower) {
             // 防禦成功
+            this.state.defenseWins++;
             const baseReward = GameConfig.invasion.baseReward.food + Math.floor(Math.random() * 10);
             const leafReward = GameConfig.invasion.baseReward.leaf + Math.floor(Math.random() * 5);
             this.state.food += baseReward;
             this.state.leaf += leafReward;
             Utils.notify(`⚔️ 入侵已被擊退！獲得 ${baseReward} 食物 + ${leafReward} 葉子`, 'success');
             Utils.log(`防禦成功，獎勵: ${baseReward} 食物 + ${leafReward} 葉子`);
+            
+            // 檢查入侵相關成就
+            this.unlockAchievement('firstDefense');
+            if (this.state.defenseWins >= 10) {
+                this.unlockAchievement('defenseMaster');
+            }
         } else {
             // 防禦失敗
             const damage = GameConfig.invasion.baseDamage + Math.floor(Math.random() * 5);
@@ -464,6 +478,89 @@ const Game = {
             Utils.notify(`⚠️ 入侵成功！損失 ${lostFood} 食物 + ${lostLeaf} 葉子`, 'error');
             Utils.log(`防禦失敗，損失: ${lostFood} 食物 + ${lostLeaf} 葉子`);
         }
+    },
+
+    /**
+     * 解鎖成就
+     * @param {string} achievementId - 成就 ID
+     */
+    unlockAchievement(achievementId) {
+        // 檢查是否已解鎖
+        if (this.state.achievements.includes(achievementId)) return;
+        
+        // 檢查成就是否存在
+        const achievement = GameConfig.achievements[achievementId];
+        if (!achievement) return;
+        
+        // 解鎖成就
+        this.state.achievements.push(achievementId);
+        
+        // 通知玩家
+        Utils.notify(`🏆 成就解鎖：${achievement.icon} ${achievement.name}`, 'success');
+        Utils.log(`成就解鎖: ${achievement.name}`);
+        
+        // 更新成就 UI
+        this.updateAchievementsUI();
+    },
+
+    /**
+     * 檢查所有成就條件
+     */
+    checkAchievements() {
+        for (const [id, achievement] of Object.entries(GameConfig.achievements)) {
+            // 跳過已解鎖的成就
+            if (this.state.achievements.includes(id)) continue;
+            
+            // 跳過特殊條件成就（condition 為 null）
+            if (!achievement.condition) continue;
+            
+            // 檢查條件
+            if (achievement.condition(this.state)) {
+                this.unlockAchievement(id);
+            }
+        }
+    },
+
+    /**
+     * 更新成就 UI
+     */
+    updateAchievementsUI() {
+        const container = document.getElementById('achievements-list');
+        if (!container) return;
+        
+        const totalAchievements = Object.keys(GameConfig.achievements).length;
+        const unlockedCount = this.state.achievements.length;
+        
+        // 更新統計
+        const statsEl = document.getElementById('achievements-stats');
+        if (statsEl) {
+            statsEl.textContent = `${unlockedCount} / ${totalAchievements}`;
+        }
+        
+        // 清空並重建列表
+        container.innerHTML = '';
+        
+        if (this.state.achievements.length === 0) {
+            container.innerHTML = '<p class="no-achievements">尚未解鎖任何成就，繼續努力！</p>';
+            return;
+        }
+        
+        // 顯示已解鎖的成就
+        this.state.achievements.forEach(id => {
+            const achievement = GameConfig.achievements[id];
+            if (!achievement) return;
+            
+            const card = document.createElement('div');
+            card.className = 'achievement-card unlocked';
+            card.innerHTML = `
+                <span class="achievement-icon">${achievement.icon}</span>
+                <div class="achievement-info">
+                    <h4>${achievement.name}</h4>
+                    <p>${achievement.description}</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
     },
 
     /**
@@ -1056,6 +1153,8 @@ const Game = {
                     totalFood: parsed.state.totalFood ?? GameConfig.resources.food.initial,
                     gameTime: parsed.state.gameTime ?? 0,
                     lastTick: Date.now(),
+                    achievements: parsed.state.achievements ?? [],
+                    defenseWins: parsed.state.defenseWins ?? 0,
                 };
 
                 // 載入配置
@@ -1092,6 +1191,8 @@ const Game = {
             gameTime: 0,
             lastInvasion: -GameConfig.invasion.cooldown,
             lastTick: Date.now(),
+            achievements: [],
+            defenseWins: 0,
         };
 
         // 清除存檔
