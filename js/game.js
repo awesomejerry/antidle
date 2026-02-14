@@ -1057,6 +1057,11 @@ const Game = {
                     insect: parsed.state.insect ?? GameConfig.resources.insect.initial,
                     soldiers: parsed.state.soldiers ?? GameConfig.resources.soldiers.initial,
                     nurses: parsed.state.nurses ?? GameConfig.resources.nurses.initial,
+                    rooms: parsed.state.rooms ?? {
+                        storage: { level: 0, maxLevel: GameConfig.rooms.storage.maxLevel },
+                        nursery: { level: 0, maxLevel: GameConfig.rooms.nursery.maxLevel },
+                        fungus: { level: 0, maxLevel: GameConfig.rooms.fungus.maxLevel },
+                    },
                     lastInvasion: parsed.state.lastInvasion ?? -GameConfig.invasion.cooldown,
                     totalFood: parsed.state.totalFood ?? GameConfig.resources.food.initial,
                     gameTime: parsed.state.gameTime ?? 0,
