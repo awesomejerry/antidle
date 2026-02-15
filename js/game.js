@@ -27,6 +27,9 @@ const Game = {
         achievements: [], // 已解鎖的成就 ID
         defenseWins: 0, // 成功防禦次數
         queenHealth: 100, // 蟻后健康值（0-100）
+        weather: 'clear', // 當前天氣
+        weatherEndTime: 0, // 天氣結束時間（遊戲時間秒數）
+        nextWeatherTime: 0, // 下次天氣觸發時間
     },
 
     // 計時器引用
@@ -362,18 +365,30 @@ const Game = {
         // 更新遊戲時間
         this.state.gameTime += delta;
 
+        // 天氣系統
+        this.updateWeather(delta);
+
+        // 獲取當前天氣效果
+        const weatherEffects = GameConfig.weather.types[this.state.weather].effects;
+
         // 蟻后加成（影響收集和轉換）
         const queenMultiplier = 1 + (this.state.queen * GameConfig.queen.productionMultiplier);
 
-        // 工蟻自動收集葉子
+        // 工蟻自動收集葉子（受天氣影響）
         if (this.state.workers > 0) {
-            const collectRate = GameConfig.workers.collectRate * this.state.workers * queenMultiplier;
+            const collectRate = GameConfig.workers.collectRate * this.state.workers * queenMultiplier * weatherEffects.leafMultiplier;
             this.state.leaf += collectRate * delta;
+
+            // 雨天增加水滴
+            if (weatherEffects.waterMultiplier > 1.0) {
+                const waterGain = (collectRate * (weatherEffects.waterMultiplier - 1.0)) * delta;
+                this.state.water += waterGain;
+            }
         }
 
         // 工蟻自動將葉子轉換為食物
         if (this.state.workers > 0 && this.state.leaf > 0) {
-            const conversionRate = GameConfig.workers.conversionRate * this.state.workers * queenMultiplier;
+            const conversionRate = GameConfig.workers.conversionRate * this.state.workers * queenMultiplier * weatherEffects.consumptionMultiplier;
             const amount = Math.min(this.state.leaf, conversionRate * delta);
             this.state.leaf -= amount;
             this.state.food += amount;
@@ -419,6 +434,22 @@ const Game = {
 
         // 入侵事件檢查
         this.checkInvasion(delta);
+
+        // 暴風天氣資源損失
+        if (this.state.weather === 'storm' && weatherEffects.lossChance) {
+            if (Math.random() < weatherEffects.lossChance * delta) {
+                const lossPercent = weatherEffects.lossPercent || 0.1;
+                const lostFood = Math.floor(this.state.food * lossPercent);
+                const lostLeaf = Math.floor(this.state.leaf * lossPercent);
+                const lostWater = Math.floor(this.state.water * lossPercent);
+
+                this.state.food = Math.max(0, this.state.food - lostFood);
+                this.state.leaf = Math.max(0, this.state.leaf - lostLeaf);
+                this.state.water = Math.max(0, this.state.water - lostWater);
+
+                Utils.notify(`🌪️ 暴風來襲！損失 ${lostFood} 食物、${lostLeaf} 葉子、${lostWater} 水滴`, 'warning');
+            }
+        }
 
         // 應用儲存容量限制
         const storageCapacity = GameConfig.resources.food.baseCapacity + (this.state.rooms.storage.level * GameConfig.rooms.storage.capacityBonus);
@@ -489,6 +520,45 @@ const Game = {
             this.state.leaf -= lostLeaf;
             Utils.notify(`⚠️ 入侵成功！損失 ${lostFood} 食物 + ${lostLeaf} 葉子`, 'error');
             Utils.log(`防禦失敗，損失: ${lostFood} 食物 + ${lostLeaf} 葉子`);
+        }
+    },
+
+    /**
+     * 更新天氣系統
+     * @param {number} delta - 經過的時間（秒）
+     */
+    updateWeather(delta) {
+        // 檢查當前天氣是否結束
+        if (this.state.weather !== 'clear' && this.state.gameTime >= this.state.weatherEndTime) {
+            // 恢復晴朗
+            this.state.weather = 'clear';
+            Utils.notify('🌤️ 天氣恢復晴朗', 'info');
+            Utils.log('天氣恢復晴朗');
+        }
+
+        // 檢查是否該觸發新天氣
+        if (this.state.gameTime >= this.state.nextWeatherTime) {
+            // 隨機選擇天氣
+            const weatherTypes = ['rain', 'sunny', 'storm'];
+            const randomWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+
+            // 設置天氣
+            this.state.weather = randomWeather;
+
+            // 設置持續時間
+            const duration = GameConfig.weather.minDuration +
+                Math.random() * (GameConfig.weather.maxDuration - GameConfig.weather.minDuration);
+            this.state.weatherEndTime = this.state.gameTime + duration;
+
+            // 設置下次天氣觸發時間
+            const interval = GameConfig.weather.minInterval +
+                Math.random() * (GameConfig.weather.maxInterval - GameConfig.weather.minInterval);
+            this.state.nextWeatherTime = this.state.gameTime + duration + interval;
+
+            // 通知玩家
+            const weatherInfo = GameConfig.weather.types[randomWeather];
+            Utils.notify(`${weatherInfo.icon} ${weatherInfo.name}來臨！持續 ${Math.round(duration)} 秒`, 'info');
+            Utils.log(`天氣變化: ${weatherInfo.name}, 持續 ${duration} 秒`);
         }
     },
 
@@ -619,6 +689,11 @@ const Game = {
      * 更新 UI 顯示
      */
     updateUI() {
+        // 更新天氣顯示
+        const weatherInfo = GameConfig.weather.types[this.state.weather];
+        document.getElementById('weather-icon').textContent = weatherInfo.icon;
+        document.getElementById('weather-name').textContent = weatherInfo.name;
+
         // 更新資源
         document.getElementById('queen').textContent = Utils.formatNumber(
             this.state.queen,
@@ -1173,6 +1248,9 @@ const Game = {
                     achievements: parsed.state.achievements ?? [],
                     defenseWins: parsed.state.defenseWins ?? 0,
                     queenHealth: parsed.state.queenHealth ?? GameConfig.queen.maxHealth,
+                    weather: parsed.state.weather ?? 'clear',
+                    weatherEndTime: parsed.state.weatherEndTime ?? 0,
+                    nextWeatherTime: parsed.state.nextWeatherTime ?? GameConfig.weather.minInterval,
                 };
 
                 // 載入配置
@@ -1211,6 +1289,10 @@ const Game = {
             lastTick: Date.now(),
             achievements: [],
             defenseWins: 0,
+            queenHealth: GameConfig.queen.maxHealth,
+            weather: 'clear',
+            weatherEndTime: 0,
+            nextWeatherTime: GameConfig.weather.minInterval,
         };
 
         // 清除存檔

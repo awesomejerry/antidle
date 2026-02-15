@@ -120,6 +120,58 @@ const GameConfig = {
         cooldown: 300, // 入侵冷卻時間（秒）
     },
 
+    // 天氣系統設定
+    weather: {
+        minInterval: 60, // 最小觸發間隔（秒）
+        maxInterval: 120, // 最大觸發間隔（秒）
+        minDuration: 30, // 最小持續時間（秒）
+        maxDuration: 60, // 最大持續時間（秒）
+        types: {
+            clear: {
+                name: '晴朗',
+                icon: '🌤️',
+                effects: {
+                    leafMultiplier: 1.0,
+                    waterMultiplier: 1.0,
+                    foodMultiplier: 1.0,
+                    consumptionMultiplier: 1.0,
+                },
+            },
+            rain: {
+                name: '雨',
+                icon: '🌧️',
+                effects: {
+                    leafMultiplier: 0.7, // 葉子 -30%
+                    waterMultiplier: 1.5, // 水滴 +50%
+                    foodMultiplier: 1.0,
+                    consumptionMultiplier: 1.0,
+                },
+            },
+            sunny: {
+                name: '陽光',
+                icon: '☀️',
+                effects: {
+                    leafMultiplier: 1.5, // 葉子 +50%
+                    waterMultiplier: 0.8, // 水滴 -20%
+                    foodMultiplier: 1.0,
+                    consumptionMultiplier: 1.2, // 食物消耗 +20%
+                },
+            },
+            storm: {
+                name: '暴風',
+                icon: '🌪️',
+                effects: {
+                    leafMultiplier: 0.5, // 葉子 -50%
+                    waterMultiplier: 0.8, // 水滴 -20%
+                    foodMultiplier: 1.0,
+                    consumptionMultiplier: 1.0,
+                    lossChance: 0.05, // 5% 機率損失資源
+                    lossPercent: 0.1, // 損失 10% 資源
+                },
+            },
+        },
+    },
+
     // 房間系統設定
     rooms: {
         storage: {

@@ -927,3 +927,37 @@ body {
     font-size: var(--font-size-sm);
     margin: 0;
 }
+
+/* 天氣顯示 */
+.weather-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    background: linear-gradient(135deg, rgba(135, 206, 235, 0.2), rgba(255, 255, 255, 0.1));
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(135, 206, 235, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.weather-icon {
+    font-size: 2rem;
+    animation: weather-pulse 2s ease-in-out infinite;
+}
+
+.weather-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+@keyframes weather-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
