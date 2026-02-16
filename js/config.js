@@ -84,32 +84,35 @@ const GameConfig = {
     workers: {
         basePrice: 10, // 基礎價格（食物）
         priceMultiplier: 1.2, // 每次購買價格增長倍數
-        collectRate: 0.5, // 每隻工蟻每秒收集葉子數量（提高以平衡轉換率）
+        collectRate: 0.5, // 每隻工蟻每秒收集葉子數量
         conversionRate: 0.5, // 每隻工蟻每秒轉換葉子為食物數量
+        waterProduction: 0.02, // 每隻工蟻每秒產生水滴數量（平衡優化）
         bulkBuyAmount: 10, // 批量購買數量
     },
 
     // 兵蟻購買設定
     soldiers: {
-        basePrice: 10, // 基礎價格（幼蟲）- 提高以避免初期購買太快
-        priceMultiplier: 1.3, // 每次購買價格增長倍數
+        basePrice: 10, // 基礎價格（幼蟲）
+        priceMultiplier: 1.25, // 每次購買價格增長倍數（平衡優化：1.3 → 1.25）
         defensePower: 1, // 每隻兵蟻的防禦力
     },
 
     // 護理蟻購買設定
     nurses: {
         basePrice: 15, // 基礎價格（食物）
-        priceMultiplier: 1.4, // 每次購買價格增長倍數
-        careEfficiency: 0.1, // 每隻護理蟻提高幼蟲產生速度（每秒）
+        priceMultiplier: 1.35, // 每次購買價格增長倍數（平衡優化：1.4 → 1.35）
+        careEfficiency: 0.08, // 每隻護理蟻提高幼蟲產生速度（平衡優化：0.1 → 0.08）
     },
 
     // 蟻后設定
     queen: {
-        eggProductionRate: 0.1, // 每秒產生幼蟲數量（降低以減少幼蟲過多）
+        eggProductionRate: 0.08, // 每秒產生幼蟲數量（平衡優化：0.1 → 0.08）
         productionMultiplier: 0.05, // 每隻蟻后提高所有生產效率（百分比）
         maxHealth: 100, // 最大健康值
         healthDecay: 0.05, // 每秒健康值下降
         nurseHealRate: 0.2, // 每隻護理蟻每秒恢復的健康值
+        larvaeFeedAmount: 5, // 餵食幼蟲數量
+        larvaeFeedHeal: 10, // 餵食恢復的健康值
     },
 
     // 入侵事件設定
@@ -195,8 +198,8 @@ const GameConfig = {
             icon: '🍄',
             basePrice: 80, // 基礎價格（食物）
             priceMultiplier: 1.4, // 每次升級價格增長倍數
-            productionRate: 0.5, // 每級產出高級食物（食物/秒）
-            waterConsumption: 0.1, // 每級消耗水滴（水滴/秒）
+            productionRate: 0.6, // 每級產出高級食物（平衡優化：0.5 → 0.6）
+            waterConsumption: 0.08, // 每級消耗水滴（平衡優化：0.1 → 0.08）
             maxLevel: 20, // 最高等級
         },
     },

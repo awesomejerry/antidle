@@ -135,6 +135,14 @@ const Game = {
             this.animateButton('fungus-upgrade-btn');
         });
 
+        // 餵食蟻后按鈕
+        document.getElementById('feed-queen-btn').addEventListener('click', () => {
+            if (typeof Audio !== 'undefined') {
+                Audio.playClick();
+            }
+            this.feedQueen();
+        });
+
         // 導航分頁切換
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -465,10 +473,14 @@ const Game = {
             const collectRate = GameConfig.workers.collectRate * this.state.workers * queenMultiplier * weatherEffects.leafMultiplier;
             this.state.leaf += collectRate * delta;
 
-            // 雨天增加水滴
+            // 工蟻產生水滴（平衡優化：穩定的水滴來源）
+            const waterProduction = GameConfig.workers.waterProduction * this.state.workers * queenMultiplier * weatherEffects.waterMultiplier * delta;
+            this.state.water += waterProduction;
+
+            // 雨天額外增加水滴
             if (weatherEffects.waterMultiplier > 1.0) {
-                const waterGain = (collectRate * (weatherEffects.waterMultiplier - 1.0)) * delta;
-                this.state.water += waterGain;
+                const extraWaterGain = (collectRate * (weatherEffects.waterMultiplier - 1.0)) * delta;
+                this.state.water += extraWaterGain;
             }
         }
 
@@ -1195,6 +1207,50 @@ const Game = {
         } else {
             Utils.notify(`食物不足！需要 ${price} 食物`, 'error');
             this.shakeButton('fungus-upgrade-btn');
+        }
+    },
+
+    /**
+     * 餵食蟻后（用幼蟲恢復健康）
+     */
+    feedQueen() {
+        const cost = GameConfig.queen.larvaeFeedAmount;
+        const heal = GameConfig.queen.larvaeFeedHeal;
+
+        // 檢查蟻后是否需要恢復
+        if (this.state.queenHealth >= GameConfig.queen.maxHealth) {
+            Utils.notify('蟻后健康值已滿！', 'error');
+            if (typeof Audio !== 'undefined') {
+                Audio.playError();
+            }
+            return;
+        }
+
+        if (this.state.larvae >= cost) {
+            this.state.larvae -= cost;
+            this.state.queenHealth = Math.min(GameConfig.queen.maxHealth, this.state.queenHealth + heal);
+            this.updateUI();
+
+            // 視覺效果
+            const feedBtn = document.getElementById('feed-queen-btn');
+            this.showFloatingNumber(heal, '❤️', feedBtn);
+            
+            if (typeof Effects !== 'undefined') {
+                Effects.bumpResource('larvae');
+            }
+            
+            // 播放音效
+            if (typeof Audio !== 'undefined') {
+                Audio.playBuy();
+            }
+
+            Utils.notify(`餵食蟻后！健康值 +${heal}`, 'success');
+            Utils.log(`餵食蟻后，消耗 ${cost} 幼蟲，恢復 ${heal} 健康值`);
+        } else {
+            Utils.notify(`幼蟲不足！需要 ${cost} 幼蟲`, 'error');
+            if (typeof Audio !== 'undefined') {
+                Audio.playError();
+            }
         }
     },
 
