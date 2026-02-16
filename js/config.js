@@ -359,6 +359,91 @@ const GameConfig = {
     // 存檔鍵名
     saveKey: 'antidle_save',
 
+    // 重生系統升級
+    rebirthUpgrades: {
+        // 生產效率類
+        productionBoost1: {
+            name: '生產加速 I',
+            description: '所有生產效率 +10%',
+            type: 'productionMultiplier',
+            effect: 0.1, // 10%
+            baseCost: 10,
+            costMultiplier: 1.5,
+            maxLevel: 10,
+            icon: '⚡',
+        },
+        productionBoost2: {
+            name: '生產加速 II',
+            description: '所有生產效率 +25%（需要生產加速 I 等級 5）',
+            type: 'productionMultiplier',
+            effect: 0.25, // 25%
+            baseCost: 50,
+            costMultiplier: 2.0,
+            maxLevel: 5,
+            icon: '⚡',
+            requires: { productionBoost1: 5 },
+        },
+
+        // 價格折扣類
+        priceDiscount1: {
+            name: '交易優惠 I',
+            description: '所有購買價格 -5%',
+            type: 'priceDiscount',
+            effect: 5, // 5%
+            baseCost: 15,
+            costMultiplier: 1.6,
+            maxLevel: 10,
+            icon: '💰',
+        },
+        priceDiscount2: {
+            name: '交易優惠 II',
+            description: '所有購買價格 -10%（需要交易優惠 I 等級 5）',
+            type: 'priceDiscount',
+            effect: 10, // 10%
+            baseCost: 75,
+            costMultiplier: 2.0,
+            maxLevel: 5,
+            icon: '💰',
+            requires: { priceDiscount1: 5 },
+        },
+
+        // 容量加成類
+        capacityBoost: {
+            name: '擴充倉庫',
+            description: '食物儲存上限 +50',
+            type: 'capacityBonus',
+            effect: 50,
+            baseCost: 20,
+            costMultiplier: 1.4,
+            maxLevel: 20,
+            icon: '📦',
+        },
+
+        // 蟻后健康類
+        queenHealth: {
+            name: '蟻后強化',
+            description: '蟻后最大健康值 +20',
+            type: 'queenHealthBonus',
+            effect: 20,
+            baseCost: 30,
+            costMultiplier: 1.5,
+            maxLevel: 10,
+            icon: '👑',
+        },
+
+        // 初始資源類
+        startingBonus: {
+            name: '起始資源',
+            description: '重生後獲得額外初始資源',
+            type: 'startingResources',
+            effect: 1, // 等級 1 = +10 食物、+5 葉子、+2 幼蟲
+            baseCost: 25,
+            costMultiplier: 1.8,
+            maxLevel: 10,
+            icon: '🎁',
+        },
+    },
+
     // 通知設定
     notifications: {
         enabled: true,

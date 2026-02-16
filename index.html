@@ -22,6 +22,7 @@
                 <button class="nav-btn active" data-tab="overview">總覽</button>
                 <button class="nav-btn" data-tab="colony">蟻群</button>
                 <button class="nav-btn" data-tab="upgrades">升級</button>
+                <button class="nav-btn" data-tab="rebirth">重生</button>
                 <button class="nav-btn" data-tab="achievements">成就</button>
                 <button class="nav-btn" data-tab="settings">設定</button>
             </nav>
@@ -254,6 +255,75 @@
                 </div>
             </section>
 
+            <!-- 重生頁面 -->
+            <section id="tab-rebirth" class="tab-content">
+                <h2>重生系統 ♻️</h2>
+                
+                <div class="rebirth-info">
+                    <div class="rebirth-stats">
+                        <div class="stat-card">
+                            <span class="stat-icon">🌟</span>
+                            <span class="stat-label">重生點數</span>
+                            <span class="stat-value" id="rebirth-points">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">📊</span>
+                            <span class="stat-label">總獲得點數</span>
+                            <span class="stat-value" id="total-rebirth-points">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🔄</span>
+                            <span class="stat-label">重生次數</span>
+                            <span class="stat-value" id="rebirth-count">0</span>
+                        </div>
+                    </div>
+
+                    <div class="rebirth-preview">
+                        <h3>重生預覽</h3>
+                        <div class="preview-item">
+                            <span>本次可獲得：</span>
+                            <span class="preview-value" id="preview-points">0 點</span>
+                        </div>
+                        <div class="preview-item">
+                            <span>重生後將重置：</span>
+                            <span class="preview-value">資源、螞蟻、房間</span>
+                        </div>
+                        <div class="preview-item">
+                            <span>重生後將保留：</span>
+                            <span class="preview-value">成就、重生點數、永久升級</span>
+                        </div>
+                        <button id="rebirth-btn" class="action-btn danger" disabled>
+                            ♻️ 執行重生（需要遊戲時間 5 分鐘）
+                        </button>
+                    </div>
+                </div>
+
+                <div class="rebirth-upgrades">
+                    <h3>永久升級商店</h3>
+                    <div id="rebirth-upgrades-list">
+                        <!-- 動態生成 -->
+                    </div>
+                </div>
+
+                <div class="rebirth-bonuses">
+                    <h3>當前永久加成</h3>
+                    <div id="rebirth-bonuses-list">
+                        <!-- 動態生成 -->
+                    </div>
+                </div>
+
+                <div class="rebirth-tips">
+                    <h3>💡 重生提示</h3>
+                    <ul>
+                        <li>重生會重置遊戲進度，但獲得重生點數</li>
+                        <li>重生點數用於購買永久升級</li>
+                        <li>永久升級在所有遊戲中都有效</li>
+                        <li>建議在遊戲進度停滯時重生</li>
+                        <li>重生後會獲得初始資源加成（如有購買）</li>
+                    </ul>
+                </div>
+            </section>
+
             <!-- 成就頁面 -->
             <section id="tab-achievements" class="tab-content">
                 <h2>成就系統 <span id="achievements-stats">0 / 21</span></h2>
@@ -310,12 +380,13 @@
         <div id="notifications"></div>
     </div>
 
-    <!-- 載入順序：變數 → 配置 → 工具函數 → 效果 → 音效 → 工具提示 → 遊戲核心 -->
+    <!-- 載入順序：變數 → 配置 → 工具函數 → 效果 → 音效 → 工具提示 → 重生 → 遊戲核心 -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/effects.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/tooltips.js"></script>
+    <script src="js/rebirth.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

@@ -44,6 +44,11 @@ const Game = {
     init() {
         Utils.log('初始化遊戲...');
 
+        // 應用重生系統的永久加成
+        if (typeof Rebirth !== 'undefined') {
+            Rebirth.applyPermanentBonuses(this);
+        }
+
         // 載入存檔
         this.loadGame();
 
@@ -213,6 +218,11 @@ const Game = {
                 Audio.setSfxVolume(value);
             }
             document.getElementById('sfx-volume-display').textContent = `${e.target.value}%`;
+        });
+
+        // 重生按鈕
+        document.getElementById('rebirth-btn').addEventListener('click', () => {
+            this.performRebirth();
         });
 
         // 頁面關閉前儲存
@@ -468,9 +478,12 @@ const Game = {
         // 蟻后加成（影響收集和轉換）
         const queenMultiplier = 1 + (this.state.queen * GameConfig.queen.productionMultiplier);
 
+        // 重生系統永久加成
+        const rebirthMultiplier = (typeof Rebirth !== 'undefined') ? Rebirth.permanentBonuses.productionMultiplier : 1;
+
         // 工蟻自動收集葉子（受天氣影響）
         if (this.state.workers > 0) {
-            const collectRate = GameConfig.workers.collectRate * this.state.workers * queenMultiplier * weatherEffects.leafMultiplier;
+            const collectRate = GameConfig.workers.collectRate * this.state.workers * queenMultiplier * rebirthMultiplier * weatherEffects.leafMultiplier;
             this.state.leaf += collectRate * delta;
 
             // 工蟻產生水滴（平衡優化：穩定的水滴來源）
@@ -550,13 +563,24 @@ const Game = {
         }
 
         // 應用儲存容量限制
-        const storageCapacity = GameConfig.resources.food.baseCapacity + (this.state.rooms.storage.level * GameConfig.rooms.storage.capacityBonus);
+        let storageCapacity = GameConfig.resources.food.baseCapacity + (this.state.rooms.storage.level * GameConfig.rooms.storage.capacityBonus);
+        
+        // 應用重生系統容量加成
+        if (typeof Rebirth !== 'undefined') {
+            storageCapacity += Rebirth.permanentBonuses.capacityBonus;
+        }
+        
         if (this.state.food > storageCapacity) {
             this.state.food = storageCapacity;
         }
 
         this.state.lastTick = now;
         this.updateUI();
+        
+        // 更新重生預覽
+        if (typeof Rebirth !== 'undefined') {
+            this.updateRebirthUI();
+        }
         
         // 檢查成就（每 5 秒檢查一次，避免頻繁檢查）
         if (Math.floor(this.state.gameTime) % 5 === 0) {
@@ -1262,6 +1286,153 @@ const Game = {
         const btn = document.getElementById(buttonId);
         btn.classList.add('pulse');
         setTimeout(() => btn.classList.remove('pulse'), 500);
+    },
+
+    /**
+     * 執行重生
+     */
+    performRebirth() {
+        if (typeof Rebirth === 'undefined') return;
+
+        const preview = Rebirth.getRebirthPreview(this.state);
+        
+        if (!preview.canRebirth) {
+            Utils.notify('無法重生！需要遊戲時間至少 5 分鐘', 'error');
+            return;
+        }
+
+        if (confirm(`確定要重生嗎？\n\n將獲得 ${preview.points} 重生點數\n所有資源和螞蟻將被重置`)) {
+            Rebirth.performRebirth(this);
+            this.updateUI();
+            this.updateRebirthUI();
+        }
+    },
+
+    /**
+     * 更新重生 UI
+     */
+    updateRebirthUI() {
+        if (typeof Rebirth === 'undefined') return;
+
+        const preview = Rebirth.getRebirthPreview(this.state);
+
+        // 更新統計數據
+        document.getElementById('rebirth-points').textContent = Utils.formatNumber(Rebirth.rebirthPoints);
+        document.getElementById('total-rebirth-points').textContent = Utils.formatNumber(Rebirth.totalRebirthPoints);
+        document.getElementById('rebirth-count').textContent = Rebirth.rebirthCount;
+
+        // 更新預覽
+        document.getElementById('preview-points').textContent = `${preview.points} 點`;
+
+        // 更新按鈕狀態
+        const rebirthBtn = document.getElementById('rebirth-btn');
+        rebirthBtn.disabled = !preview.canRebirth;
+
+        if (preview.canRebirth) {
+            rebirthBtn.textContent = `♻️ 執行重生（獲得 ${preview.points} 點）`;
+        } else {
+            const remainingTime = 300 - this.state.gameTime;
+            rebirthBtn.textContent = `♻️ 執行重生（需要 ${Math.ceil(remainingTime)} 秒）`;
+        }
+
+        // 更新升級列表
+        this.updateRebirthUpgradesList();
+
+        // 更新加成列表
+        this.updateRebirthBonusesList();
+    },
+
+    /**
+     * 更新重生升級列表
+     */
+    updateRebirthUpgradesList() {
+        const container = document.getElementById('rebirth-upgrades-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        for (const [id, upgrade] of Object.entries(GameConfig.rebirthUpgrades)) {
+            const currentLevel = Rebirth.getUpgradeLevel(id);
+            const price = Rebirth.getUpgradePrice(id);
+            const canAfford = Rebirth.rebirthPoints >= price;
+
+            const card = document.createElement('div');
+            card.className = 'upgrade-card';
+
+            let statusText = '';
+            let buttonDisabled = false;
+
+            if (currentLevel >= upgrade.maxLevel) {
+                statusText = '已滿級';
+                buttonDisabled = true;
+            } else if (!canAfford) {
+                statusText = `${price} 點（點數不足）`;
+                buttonDisabled = true;
+            } else {
+                statusText = `${price} 點`;
+            }
+
+            card.innerHTML = `
+                <div class="upgrade-header">
+                    <span class="upgrade-icon">${upgrade.icon}</span>
+                    <h4>${upgrade.name}</h4>
+                    <span class="upgrade-level">${currentLevel}/${upgrade.maxLevel}</span>
+                </div>
+                <div class="upgrade-info">
+                    <p>${upgrade.description}</p>
+                </div>
+                <div class="upgrade-action">
+                    <button class="action-btn" data-upgrade="${id}" ${buttonDisabled ? 'disabled' : ''}>
+                        購買 (${statusText})
+                    </button>
+                </div>
+            `;
+
+            // 綁定購買事件
+            const btn = card.querySelector('button');
+            if (!buttonDisabled) {
+                btn.addEventListener('click', () => {
+                    if (Rebirth.purchasePermanentUpgrade(id)) {
+                        this.updateRebirthUI();
+                    }
+                });
+            }
+
+            container.appendChild(card);
+        }
+    },
+
+    /**
+     * 更新重生加成列表
+     */
+    updateRebirthBonusesList() {
+        const container = document.getElementById('rebirth-bonuses-list');
+        if (!container) return;
+
+        const bonuses = Rebirth.permanentBonuses;
+
+        container.innerHTML = `
+            <div class="bonus-item">
+                <span>⚡ 生產效率：</span>
+                <span>${((bonuses.productionMultiplier - 1) * 100).toFixed(0)}%</span>
+            </div>
+            <div class="bonus-item">
+                <span>💰 價格折扣：</span>
+                <span>${bonuses.priceDiscount.toFixed(0)}%</span>
+            </div>
+            <div class="bonus-item">
+                <span>📦 容量加成：</span>
+                <span>+${bonuses.capacityBonus}</span>
+            </div>
+            <div class="bonus-item">
+                <span>👑 蟻后健康：</span>
+                <span>+${bonuses.queenHealthBonus}</span>
+            </div>
+            <div class="bonus-item">
+                <span>🎁 初始資源：</span>
+                <span>等級 ${bonuses.startingResources}</span>
+            </div>
+        `;
     },
 
     /**
