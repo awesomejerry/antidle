@@ -57,6 +57,19 @@ const Game = {
 
         // 初始化 UI
         this.updateUI();
+        
+        // 初始化成就列表
+        this.updateAchievementsUI();
+        
+        // 初始化研究 UI
+        if (typeof Research !== 'undefined') {
+            this.updateResearchUI();
+        }
+        
+        // 初始化重生 UI
+        if (typeof Rebirth !== 'undefined') {
+            this.updateRebirthUI();
+        }
 
         // 啟動遊戲循環
         this.startGameLoop();
