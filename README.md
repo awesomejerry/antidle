@@ -1,6 +1,6 @@
 # AntIdle - 螞蟻放置遊戲
 
-[![Version](https://img.shields.io/badge/version-0.8.0-blue.svg)](https://github.com/awesomejerryshen/antidle)
+[![Version](https://img.shields.io/badge/version-0.10.0-blue.svg)](https://github.com/awesomejerryshen/antidle)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 一個基於瀏覽器的螞蟻放置遊戲，採用純 HTML/CSS/JavaScript 開發，無需後端伺服器。
@@ -13,6 +13,8 @@
 - **房間升級**：儲藏室、育兒室、真菌農場等設施
 - **事件系統**：天氣變化和入侵事件
 - **成就系統**：21 個成就等你解鎖
+- **重生系統**：重生獲得永久加成和升級 ⭐ 新增
+- **科學研究**：20 個研究項目，16 種加成效果 ⭐ 新增
 - **視覺效果**：螞蟻動畫、粒子特效、天氣視覺化
 - **音效系統**：完整的遊戲音效
 - **深色模式**：可切換主題
@@ -64,6 +66,8 @@ antidle/
     ├── effects.js         # 視覺效果模組
     ├── audio.js           # 音效系統
     ├── tooltips.js        # 工具提示系統
+    ├── rebirth.js         # 重生系統 ⭐ 新增
+    ├── research.js        # 科學研究系統 ⭐ 新增
     └── game.js            # 遊戲核心邏輯
 ```
 
@@ -78,6 +82,20 @@ antidle/
 ### 進階玩法
 1. **升級房間**：
    - 儲藏室：增加食物儲存上限
+   - 育兒室：加速幼蟲孵化
+   - 真菌農場：用水滴產出食物
+
+2. **重生系統** ⭐ 新增：
+   - 遊戲時間 5 分鐘後可重生
+   - 獲得重生點數（基於食物、時間、成就等）
+   - 購買永久升級（生產加速、價格折扣等）
+   - 重生後保留成就和永久加成
+
+3. **科學研究** ⭐ 新增：
+   - 每 30 秒自動獲得研究點數
+   - 20 個研究項目（6 大類別）
+   - 解鎖強大加成（生產、效率、防禦等）
+   - 研究完成後永久生效
    - 育兒室：加速幼蟲孵化
    - 真菌農場：消耗水滴產出食物
 2. **管理蟻后**：保持蟻后健康以維持產卵效率
