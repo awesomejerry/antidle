@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntIdle - 模組測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 AntIdle 模組整合測試</h1>
+    
+    <div id="test-results"></div>
+
+    <!-- 載入所有腳本 -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/game-shop.js"></script>
+    <script src="js/game-events.js"></script>
+    <script src="js/game-achievements.js"></script>
+    <script src="js/game-ui.js"></script>
+    
+    <script>
+        const results = [];
+        
+        function addTest(name, passed, message) {
+            results.push({ name, passed, message });
+        }
+        
+        function runTests() {
+            const container = document.getElementById('test-results');
+            
+            // 測試 1: 檢查所有模組是否載入
+            addTest(
+                '模組載入檢查',
+                typeof GameShop !== 'undefined' && 
+                typeof GameEvents !== 'undefined' && 
+                typeof GameAchievements !== 'undefined' && 
+                typeof GameUI !== 'undefined',
+                '所有模組都已正確載入'
+            );
+            
+            // 測試 2: GameShop 功能
+            addTest(
+                'GameShop - 價格計算',
+                typeof GameShop.getWorkerPrice === 'function' &&
+                typeof GameShop.getSoldierPrice === 'function' &&
+                typeof GameShop.getNursePrice === 'function',
+                'GameShop 價格計算函數存在'
+            );
+            
+            // 測試 3: GameEvents 功能
+            addTest(
+                'GameEvents - 事件處理',
+                typeof GameEvents.updateWeather === 'function' &&
+                typeof GameEvents.checkInvasion === 'function' &&
+                typeof GameEvents.handleInvasion === 'function',
+                'GameEvents 事件處理函數存在'
+            );
+            
+            // 測試 4: GameAchievements 功能
+            addTest(
+                'GameAchievements - 成就系統',
+                typeof GameAchievements.unlockAchievement === 'function' &&
+                typeof GameAchievements.checkAchievements === 'function' &&
+                typeof GameAchievements.getAchievementProgress === 'function',
+                'GameAchievements 成就系統函數存在'
+            );
+            
+            // 測試 5: GameUI 功能
+            addTest(
+                'GameUI - UI 更新',
+                typeof GameUI.updateUI === 'function' &&
+                typeof GameUI.updateResources === 'function' &&
+                typeof GameUI.updateButtonStates === 'function',
+                'GameUI UI 更新函數存在'
+            );
+            
+            // 測試 6: Config 完整性
+            addTest(
+                'GameConfig - 配置檢查',
+                typeof GameConfig !== 'undefined' &&
+                typeof GameConfig.workers !== 'undefined' &&
+                typeof GameConfig.soldiers !== 'undefined' &&
+                typeof GameConfig.achievements !== 'undefined',
+                'GameConfig 配置正確載入'
+            );
+            
+            // 測試 7: Utils 工具函數
+            addTest(
+                'Utils - 工具函數',
+                typeof Utils !== 'undefined' &&
+                typeof Utils.formatNumber === 'function' &&
+                typeof Utils.notify === 'function',
+                'Utils 工具函數存在'
+            );
+            
+            // 測試 8: 函數調用測試
+            try {
+                const workerPrice = GameShop.getWorkerPrice();
+                addTest(
+                    'GameShop - 函數調用',
+                    typeof workerPrice === 'number' && workerPrice > 0,
+                    `工蟻價格計算正確: ${workerPrice}`
+                );
+            } catch (e) {
+                addTest('GameShop - 函數調用', false, `錯誤: ${e.message}`);
+            }
+            
+            // 渲染結果
+            let html = '';
+            let passedCount = 0;
+            let failedCount = 0;
+            
+            results.forEach(result => {
+                const className = result.passed ? 'success' : 'error';
+                const icon = result.passed ? '✅' : '❌';
+                html += `
+                    <div class="test-section">
+                        <h3>${icon} ${result.name}</h3>
+                        <div class="test-result ${className}">
+                            ${result.message}
+                        </div>
+                    </div>
+                `;
+                if (result.passed) passedCount++;
+                else failedCount++;
+            });
+            
+            // 總結
+            html = `
+                <div class="test-section">
+                    <h2>測試總結</h2>
+                    <div class="test-result info">
+                        <strong>總測試數:</strong> ${results.length}<br>
+                        <strong>通過:</strong> ${passedCount}<br>
+                        <strong>失敗:</strong> ${failedCount}<br>
+                        <strong>成功率:</strong> ${((passedCount / results.length) * 100).toFixed(1)}%
+                    </div>
+                </div>
+            ` + html;
+            
+            container.innerHTML = html;
+        }
+        
+        // 執行測試
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

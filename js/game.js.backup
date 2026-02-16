@@ -56,18 +56,10 @@ const Game = {
         this.bindEvents();
 
         // 初始化 UI
-        if (typeof GameUI !== 'undefined') {
-            GameUI.updateUI();
-        } else {
-            this.updateUI();
-        }
+        this.updateUI();
         
         // 初始化成就列表
-        if (typeof GameUI !== 'undefined') {
-            GameUI.updateAchievementsUI();
-        } else {
-            this.updateAchievementsUI();
-        }
+        this.updateAchievementsUI();
         
         // 初始化研究 UI
         if (typeof Research !== 'undefined') {
@@ -664,11 +656,7 @@ const Game = {
         
         // 檢查成就（每 5 秒檢查一次，避免頻繁檢查）
         if (Math.floor(this.state.gameTime) % 5 === 0) {
-            if (typeof GameAchievements !== 'undefined') {
-                GameAchievements.checkAchievements();
-            } else {
-                this.checkAchievements();
-            }
+            this.checkAchievements();
         }
     },
 
