@@ -75,6 +75,11 @@ const Game = {
         if (typeof I18n !== 'undefined') {
             document.getElementById('language-select').value = I18n.getCurrentLang();
         }
+        
+        // 初始化日誌
+        if (typeof Journal !== 'undefined') {
+            Journal.updateJournalUI();
+        }
 
         // 啟動遊戲循環
         this.startGameLoop();
@@ -244,6 +249,28 @@ const Game = {
             if (typeof I18n !== 'undefined') {
                 I18n.changeLanguage(lang);
             }
+        });
+
+        // 清空日誌
+        document.getElementById('clear-journal-btn').addEventListener('click', () => {
+            if (confirm('確定要清空所有日誌記錄嗎？')) {
+                if (typeof Journal !== 'undefined') {
+                    Journal.clear();
+                }
+            }
+        });
+
+        // 日誌過濾器
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // 更新活動狀態
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // 過濾日誌
+                const filter = e.target.getAttribute('data-filter');
+                this.filterJournal(filter);
+            });
         });
 
         // 重生按鈕
@@ -741,6 +768,15 @@ const Game = {
             // 通知玩家
             const weatherInfo = GameConfig.weather.types[randomWeather];
             Utils.notify(`${weatherInfo.icon} ${weatherInfo.name}來臨！持續 ${Math.round(duration)} 秒`, 'info');
+            
+            // 記錄日誌
+            if (typeof Journal !== 'undefined') {
+                Journal.log(Journal.types.WEATHER, `${weatherInfo.icon} ${weatherInfo.name}來臨，持續 ${Math.round(duration)} 秒`, {
+                    weather: randomWeather,
+                    duration: duration,
+                });
+            }
+            
             Utils.log(`天氣變化: ${weatherInfo.name}, 持續 ${duration} 秒`);
         }
     },
@@ -1584,6 +1620,44 @@ const Game = {
                 <span>等級 ${bonuses.startingResources}</span>
             </div>
         `;
+    },
+
+    /**
+     * 過濾日誌
+     * @param {string} filter - 過濾類型
+     */
+    filterJournal(filter) {
+        if (typeof Journal === 'undefined') return;
+
+        const container = document.getElementById('journal-list');
+        if (!container) return;
+
+        if (filter === 'all') {
+            Journal.updateJournalUI();
+            return;
+        }
+
+        const entries = Journal.getEntries({ type: filter, limit: 50 });
+
+        if (entries.length === 0) {
+            container.innerHTML = '<p class="no-entries">尚無此類型的日誌記錄</p>';
+            return;
+        }
+
+        container.innerHTML = entries.map(entry => `
+            <div class="journal-entry" data-type="${entry.type}">
+                <div class="entry-icon" style="color: ${Journal.getTypeColor(entry.type)}">
+                    ${Journal.getTypeIcon(entry.type)}
+                </div>
+                <div class="entry-content">
+                    <div class="entry-message">${entry.message}</div>
+                    <div class="entry-meta">
+                        <span class="entry-time">${Journal.formatTimestamp(entry.timestamp)}</span>
+                        <span class="entry-game-time">遊戲時間: ${Journal.formatGameTime(entry.gameTime)}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     },
 
     /**

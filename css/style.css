@@ -1326,3 +1326,124 @@ body {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
 }
+
+/* 日誌頁面樣式 */
+.journal-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-dark);
+    border-radius: var(--radius-md);
+}
+
+.filter-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-card);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.filter-btn:hover {
+    border-color: var(--color-primary);
+    background-color: rgba(139, 69, 19, 0.1);
+}
+
+.filter-btn.active {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.journal-list {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-dark);
+    border-radius: var(--radius-md);
+}
+
+.journal-entry {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+    transition: all var(--transition-fast);
+}
+
+.journal-entry:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.entry-icon {
+    font-size: 1.5rem;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.entry-content {
+    flex: 1;
+}
+
+.entry-message {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-base);
+}
+
+.entry-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.entry-time::before {
+    content: '🕐 ';
+}
+
+.entry-game-time::before {
+    content: '⏱️ ';
+}
+
+.no-entries {
+    text-align: center;
+    color: var(--color-text-light);
+    font-style: italic;
+    padding: var(--spacing-xl);
+}
+
+.journal-actions {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+}
+
+/* 深色模式日誌樣式 */
+body.dark-theme .journal-entry {
+    background-color: rgba(42, 42, 42, 0.95);
+}
+
+body.dark-theme .filter-btn {
+    background-color: rgba(42, 42, 42, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-theme .filter-btn:hover {
+    background-color: rgba(139, 69, 19, 0.3);
+}
+
+body.dark-theme .filter-btn.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}

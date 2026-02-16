@@ -25,6 +25,7 @@
                 <button class="nav-btn" data-tab="research">研究</button>
                 <button class="nav-btn" data-tab="rebirth">重生</button>
                 <button class="nav-btn" data-tab="achievements">成就</button>
+                <button class="nav-btn" data-tab="journal">日誌</button>
                 <button class="nav-btn" data-tab="settings">設定</button>
             </nav>
         </header>
@@ -386,6 +387,31 @@
                 </div>
             </section>
 
+            <!-- 日誌頁面 -->
+            <section id="tab-journal" class="tab-content">
+                <h2>遊戲日誌 📜</h2>
+                
+                <div class="journal-filters">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="resource">📦 資源</button>
+                    <button class="filter-btn" data-filter="purchase">🛒 購買</button>
+                    <button class="filter-btn" data-filter="upgrade">⬆️ 升級</button>
+                    <button class="filter-btn" data-filter="achievement">🏆 成就</button>
+                    <button class="filter-btn" data-filter="weather">🌤️ 天氣</button>
+                    <button class="filter-btn" data-filter="invasion">⚔️ 入侵</button>
+                    <button class="filter-btn" data-filter="rebirth">♻️ 重生</button>
+                    <button class="filter-btn" data-filter="research">🔬 研究</button>
+                </div>
+
+                <div id="journal-list" class="journal-list">
+                    <!-- 動態生成 -->
+                </div>
+
+                <div class="journal-actions">
+                    <button id="clear-journal-btn" class="action-btn danger">🗑️ 清空日誌</button>
+                </div>
+            </section>
+
             <!-- 設定頁面 -->
             <section id="tab-settings" class="tab-content">
                 <h2>遊戲設定</h2>
@@ -434,7 +460,7 @@
         <div id="notifications"></div>
     </div>
 
-    <!-- 載入順序：語言 → 變數 → 配置 → 工具函數 → 效果 → 音效 → 工具提示 → 重生 → 研究 → i18n → 遊戲核心 -->
+    <!-- 載入順序：語言 → 變數 → 配置 → 工具函數 → 效果 → 音效 → 工具提示 → 重生 → 研究 → i18n → 日誌 → 遊戲核心 -->
     <script src="js/lang/zh-TW.js"></script>
     <script src="js/lang/en.js"></script>
     <script src="js/config.js"></script>
@@ -445,6 +471,7 @@
     <script src="js/rebirth.js"></script>
     <script src="js/research.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/journal.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>
