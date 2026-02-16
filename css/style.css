@@ -397,6 +397,12 @@ body {
     color: white;
 }
 
+.notification.info {
+    border-left-color: var(--color-info);
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.95), rgba(30, 136, 229, 0.95));
+    color: white;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;
