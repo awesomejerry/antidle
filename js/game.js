@@ -539,7 +539,11 @@ const Game = {
         this.state.gameTime += delta;
 
         // 天氣系統
-        this.updateWeather(delta);
+        if (typeof GameEvents !== 'undefined') {
+            GameEvents.updateWeather(delta);
+        } else {
+            this.updateWeather(delta);
+        }
 
         // 獲取當前天氣效果
         const weatherEffects = GameConfig.weather.types[this.state.weather].effects;
