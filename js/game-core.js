@@ -175,6 +175,28 @@ const Game = {
             }
         });
 
+        document.getElementById('export-save-btn').addEventListener('click', () => {
+            if (typeof Audio !== 'undefined') {
+                Audio.playClick();
+            }
+            this.exportSave();
+        });
+
+        document.getElementById('import-save-btn').addEventListener('click', () => {
+            if (typeof Audio !== 'undefined') {
+                Audio.playClick();
+            }
+            document.getElementById('import-file-input').click();
+        });
+
+        document.getElementById('import-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.importSave(file);
+                e.target.value = '';
+            }
+        });
+
         document.getElementById('setting-autosave').addEventListener('change', (e) => {
             GameConfig.game.autoSave = e.target.checked;
             if (e.target.checked) {
@@ -1273,6 +1295,149 @@ const Game = {
         } catch (error) {
             console.error('載入失敗:', error);
             Utils.notify('載存檔失敗，已重置遊戲', 'warning');
+        }
+    },
+
+    exportSave() {
+        const now = new Date();
+        const timestamp = now.toISOString();
+        const filename = `antidle-save-${now.toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`;
+        
+        const exportData = {
+            version: GameConfig.game.version,
+            exportTime: timestamp,
+            gameState: this.state,
+        };
+
+        if (typeof Rebirth !== 'undefined') {
+            exportData.rebirthData = {
+                rebirthPoints: Rebirth.rebirthPoints,
+                totalRebirthPoints: Rebirth.totalRebirthPoints,
+                rebirthCount: Rebirth.rebirthCount,
+                purchasedUpgrades: Rebirth.purchasedUpgrades,
+            };
+        }
+
+        if (typeof Research !== 'undefined') {
+            exportData.researchData = {
+                researchPoints: Research.researchPoints,
+                totalResearchPoints: Research.totalResearchPoints,
+                unlockedResearch: Research.unlockedResearch,
+            };
+        }
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.updateLastBackupTime(timestamp);
+        Utils.notify('存檔已匯出！', 'success');
+        Utils.log(`存檔已匯出: ${filename}`);
+    },
+
+    importSave(file) {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                const importData = JSON.parse(e.target.result);
+                
+                if (!this.validateImportData(importData)) {
+                    Utils.notify('無效的存檔格式！', 'error');
+                    return;
+                }
+
+                const importVersion = importData.version;
+                const currentVersion = GameConfig.game.version;
+                
+                if (importVersion !== currentVersion) {
+                    if (!confirm(`存檔版本 (${importVersion}) 與當前版本 (${currentVersion}) 不同，可能導致相容性問題。\n\n確定要繼續匯入嗎？`)) {
+                        return;
+                    }
+                }
+
+                if (!confirm('匯入存檔將覆蓋當前遊戲進度！\n\n確定要繼續嗎？')) {
+                    return;
+                }
+
+                this.state = { ...this.state, ...importData.gameState };
+                this.state.lastTick = Date.now();
+
+                if (importData.rebirthData && typeof Rebirth !== 'undefined') {
+                    Rebirth.rebirthPoints = importData.rebirthData.rebirthPoints || 0;
+                    Rebirth.totalRebirthPoints = importData.rebirthData.totalRebirthPoints || 0;
+                    Rebirth.rebirthCount = importData.rebirthData.rebirthCount || 0;
+                    Rebirth.purchasedUpgrades = importData.rebirthData.purchasedUpgrades || {};
+                }
+
+                if (importData.researchData && typeof Research !== 'undefined') {
+                    Research.researchPoints = importData.researchData.researchPoints || 0;
+                    Research.totalResearchPoints = importData.researchData.totalResearchPoints || 0;
+                    Research.unlockedResearch = importData.researchData.unlockedResearch || [];
+                }
+
+                this.saveGame();
+                this.updateUI();
+                
+                if (typeof GameUI !== 'undefined') {
+                    GameUI.updateUI();
+                }
+                
+                if (typeof Rebirth !== 'undefined') {
+                    this.updateRebirthUI();
+                }
+                
+                if (typeof Research !== 'undefined') {
+                    this.updateResearchUI();
+                }
+                
+                if (typeof GameAchievements !== 'undefined') {
+                    GameAchievements.updateAchievementsUI();
+                } else {
+                    this.updateAchievementsUI();
+                }
+
+                this.updateLastBackupTime(importData.exportTime);
+                Utils.notify('存檔已匯入！', 'success');
+                Utils.log('存檔已成功匯入');
+                
+            } catch (error) {
+                console.error('匯入失敗:', error);
+                Utils.notify('匯入失敗！請確認檔案格式正確', 'error');
+            }
+        };
+
+        reader.onerror = () => {
+            Utils.notify('讀取檔案失敗！', 'error');
+        };
+
+        reader.readAsText(file);
+    },
+
+    validateImportData(data) {
+        if (!data || typeof data !== 'object') return false;
+        if (!data.version || typeof data.version !== 'string') return false;
+        if (!data.gameState || typeof data.gameState !== 'object') return false;
+        
+        const requiredFields = ['food', 'workers', 'queen', 'gameTime'];
+        for (const field of requiredFields) {
+            if (!(field in data.gameState)) return false;
+        }
+        
+        return true;
+    },
+
+    updateLastBackupTime(timestamp) {
+        const el = document.getElementById('last-backup-time');
+        if (el) {
+            const date = new Date(timestamp);
+            el.textContent = date.toLocaleString('zh-TW');
         }
     },
 

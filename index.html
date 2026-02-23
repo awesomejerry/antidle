@@ -457,6 +457,19 @@
                         </div>
                     </div>
                     
+                    <div class="setting-group">
+                        <h3>存檔管理</h3>
+                        <div class="setting-row">
+                            <label class="setting-label">最後備份時間</label>
+                            <span id="last-backup-time">從未備份</span>
+                        </div>
+                        <div class="setting-row" style="gap: 10px;">
+                            <button id="export-save-btn" class="action-btn">💾 匯出存檔</button>
+                            <button id="import-save-btn" class="action-btn">📂 匯入存檔</button>
+                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                    
                     <button id="save-btn" class="action-btn">💾 手動儲存</button>
                     <button id="reset-btn" class="action-btn danger">🔄 重置遊戲</button>
                 </div>
