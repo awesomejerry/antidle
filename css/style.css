@@ -1447,3 +1447,82 @@ body.dark-theme .filter-btn.active {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
 }
+
+.colony-view-section {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background-color: var(--color-bg-dark);
+    border-radius: var(--radius-lg);
+}
+
+.colony-view-section h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-lg);
+    text-align: center;
+}
+
+.colony-view-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.colony-room-card {
+    background-color: var(--color-bg-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+}
+
+.colony-room-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.room-visual {
+    margin-bottom: var(--spacing-md);
+}
+
+.room-icon-large {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.room-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.room-name {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+}
+
+.room-level-display {
+    background: linear-gradient(135deg, var(--color-primary), #4A90E2);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    display: inline-block;
+}
+
+.room-stat {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+body.dark-theme .colony-view-section {
+    background-color: rgba(42, 42, 42, 0.95);
+}
+
+body.dark-theme .colony-room-card {
+    background-color: rgba(60, 60, 60, 0.95);
+}

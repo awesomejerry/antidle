@@ -198,6 +198,42 @@
                         <p>上一次入侵：<span id="last-invasion-time">無</span></p>
                     </div>
                 </div>
+
+                <div id="colony-view-section" class="colony-view-section">
+                    <h3>蟻巢可視化 / Colony View</h3>
+                    <div id="colony-view-grid" class="colony-view-grid">
+                        <div class="colony-room-card" data-room="storage">
+                            <div class="room-visual">
+                                <span class="room-icon-large">🏠</span>
+                            </div>
+                            <div class="room-details">
+                                <span class="room-name" data-i18n="colonyView.rooms.storage.name">儲藏室</span>
+                                <span class="room-level-display">Lv. <span id="cv-storage-level">0</span></span>
+                                <span class="room-stat"><span id="cv-storage-stat">0</span> <span data-i18n="colonyView.capacity">容量</span></span>
+                            </div>
+                        </div>
+                        <div class="colony-room-card" data-room="nursery">
+                            <div class="room-visual">
+                                <span class="room-icon-large">🥚</span>
+                            </div>
+                            <div class="room-details">
+                                <span class="room-name" data-i18n="colonyView.rooms.nursery.name">育兒室</span>
+                                <span class="room-level-display">Lv. <span id="cv-nursery-level">0</span></span>
+                                <span class="room-stat"><span id="cv-nursery-stat">0</span>/s <span data-i18n="colonyView.hatchRate">孵化</span></span>
+                            </div>
+                        </div>
+                        <div class="colony-room-card" data-room="fungus">
+                            <div class="room-visual">
+                                <span class="room-icon-large">🍄</span>
+                            </div>
+                            <div class="room-details">
+                                <span class="room-name" data-i18n="colonyView.rooms.fungus.name">真菌農場</span>
+                                <span class="room-level-display">Lv. <span id="cv-fungus-level">0</span></span>
+                                <span class="room-stat"><span id="cv-fungus-stat">0</span>/s <span data-i18n="colonyView.production">產出</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- 升級頁面 -->
@@ -497,6 +533,7 @@
     <script src="js/game-achievements.js"></script>
     <script src="js/game-ui.js"></script>
     <!-- 遊戲模組化組件 -->
+    <script src="js/modules/colony-view.js"></script>
     <script src="js/game-resources.js"></script>
     <script src="js/game-rooms.js"></script>
     <script src="js/game-weather.js"></script>

@@ -72,6 +72,24 @@ window.translations['en'] = {
         },
     },
 
+    colonyView: {
+        title: 'Colony View',
+        capacity: 'capacity',
+        hatchRate: 'hatch',
+        production: 'prod',
+        rooms: {
+            storage: {
+                name: 'Storage Room',
+            },
+            nursery: {
+                name: 'Nursery',
+            },
+            fungus: {
+                name: 'Fungus Farm',
+            },
+        },
+    },
+
     // Upgrades Page
     upgrades: {
         title: 'Room Upgrades',

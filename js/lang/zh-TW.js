@@ -72,6 +72,24 @@ window.translations['zh-TW'] = {
         },
     },
 
+    colonyView: {
+        title: '蟻巢可視化',
+        capacity: '容量',
+        hatchRate: '孵化',
+        production: '產出',
+        rooms: {
+            storage: {
+                name: '儲藏室',
+            },
+            nursery: {
+                name: '育兒室',
+            },
+            fungus: {
+                name: '真菌農場',
+            },
+        },
+    },
+
     // 升級頁面
     upgrades: {
         title: '房間升級',

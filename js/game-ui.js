@@ -13,12 +13,14 @@ const GameUI = {
         this.updateButtonStates();
         this.updateAchievementsUI();
         
-        // 更新重生 UI
+        if (typeof ColonyView !== 'undefined') {
+            ColonyView.update();
+        }
+        
         if (typeof Rebirth !== 'undefined') {
             Game.updateRebirthUI();
         }
         
-        // 更新研究 UI
         if (typeof Research !== 'undefined') {
             Game.updateResearchUI();
         }
